@@ -280,26 +280,49 @@
     }
 
     // ===== CRUD SUPABASE DATABASE =====
-    async function simpanData() {
-      if (sessionStorage.getItem('spks_logged_role') === 'user') return;
+    aasync function simpanData() {
+  const currentRole = sessionStorage.getItem('spks_logged_role');
+  if (currentRole === 'user') {
+    alert("Akses ditolak: User tidak memiliki wewenang menyimpan data!");
+    return;
+  }
 
-      const payload = {
-        no_spks: document.getElementById('noSpks').value,
-        po_buyer: document.getElementById('poBuyer').value,
-        tgl_spks: document.getElementById('tglSpks').value || null,
-        tgl_selesai_spks: document.getElementById('tglSelesaiSpks').value || null,
-        pengrajin: document.getElementById('pengrajin').value,
-        harga_sample: document.getElementById('hargaSample').value ? parseFloat(document.getElementById('hargaSample').value) : null,
-        harga_produksi: document.getElementById('hargaProduksi').value ? parseFloat(document.getElementById('hargaProduksi').value) : null,
-        nama_item: document.getElementById('namaItem').value,
-        jumlah_item: document.getElementById('jumlahItem').value ? parseInt(document.getElementById('jumlahItem').value) : null,
-        ukuran: document.getElementById('ukuran').value,
-        material1: document.getElementById('material1').value,
-        material2: document.getElementById('material2').value,
-        material3: document.getElementById('material3').value,
-        berat: document.getElementById('berat').value ? parseFloat(document.getElementById('berat').value) : null,
-        keterangan: document.getElementById('keterangan').value,
-        gambar: base64Gambar
+  const data = getFormData();
+  if (!data.namaItem && !data.poBuyer) {
+    alert("Harap isi setidaknya PO/Buyer atau Nama Item!");
+    return;
+  }
+
+  // Format data sesuai nama kolom database
+  const payload = {
+    no_spks: data.noSpks,
+    po_buyer: data.poBuyer,
+    tgl_spks: data.tglSpks || null,
+    tgl_selesai_spks: data.tglSelesaiSpks || null,
+    pengrajin: data.pengrajin,
+    harga_sample: data.hargaSample ? parseFloat(data.hargaSample) : null,
+    harga_produksi: data.hargaProduksi ? parseFloat(data.hargaProduksi) : null,
+    nama_item: data.namaItem,
+    jumlah_item: data.jumlahItem ? parseInt(data.jumlahItem) : null,
+    ukuran: data.ukuran,
+    material1: data.material1,
+    material2: data.material2,
+    material3: data.material3,
+    berat: data.berat ? parseFloat(data.berat) : null,
+    keterangan: data.keterangan,
+    gambar: data.gambar
+  };
+
+  const { error } = await supabase.from('spks').insert([payload]);
+
+  if (error) {
+    alert("Gagal menyimpan ke cloud: " + error.message);
+  } else {
+    alert("Data SPKS berhasil disimpan ke Cloud Database!");
+    tampilkanData();
+    resetForm();
+  }
+}
       };
 
       if (!payload.nama_item && !payload.po_buyer) {
@@ -324,21 +347,30 @@
     }
 
     async function tampilkanData() {
-      const tbody = document.getElementById('tabelSimpan');
-      const currentRole = sessionStorage.getItem('spks_logged_role');
-      const keyword = (document.getElementById('searchInput').value || '').toLowerCase();
+  const tbody = document.getElementById('tabelSimpan');
+  const keyword = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  const currentRole = sessionStorage.getItem('spks_logged_role');
+  const totalColspan = currentRole === 'admin' ? 18 : 17;
 
-      const { data: listData, error } = await supabaseClient.from('spks').select('*').order('id', { ascending: false });
+  // Ambil data dari Supabase Cloud
+  const { data: listData, error } = await supabase.from('spks').select('*').order('id', { ascending: false });
 
-      if (error) {
-        tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:red;">Gagal memuat dari Cloud: ${error.message}</td></tr>`;
-        return;
-      }
+  if (error) {
+    tbody.innerHTML = `<tr><td colspan="${totalColspan}" style="text-align:center; color:red;">Gagal memuat data: ${error.message}</td></tr>`;
+    return;
+  }
 
-      tbody.innerHTML = '';
-      if (!listData || listData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:#64748b;">Belum ada data tersimpan di Cloud Database</td></tr>`;
-        return;
+  tbody.innerHTML = '';
+
+  if (!listData || listData.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="${totalColspan}" style="text-align:center; color:#64748b;">Belum ada data tersimpan di Cloud</td></tr>`;
+    return;
+  }
+
+  listData.forEach((item, index) => {
+    // Render baris tabel seperti biasa...
+  });
+}
       }
 
       listData.forEach((item, index) => {
