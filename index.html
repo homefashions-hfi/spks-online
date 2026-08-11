@@ -4,616 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SPKS - Surat Perintah Kerja Sample</title>
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- ExcelJS & FileSaver for Advanced Excel Styling -->
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
   <!-- SheetJS (XLSX) for Reading/Importing Excel Files -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    body {
-      background-color: #e2e8f0;
-      color: #0f172a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 15px 10px;
-      margin: 0;
-      min-height: 100vh;
-    }
-
-    /* Container utama ringkas & jelas */
-    .container {
-      width: 100%;
-      max-width: 1100px;
-      background-color: #ffffff;
-      border: 2px solid #64748b;
-      border-radius: 8px;
-      padding: 18px 22px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    /* Header Styling */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid #334155;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .logo-left-img {
-      max-height: 38px;
-      width: auto;
-      object-fit: contain;
-      display: block;
-    }
-
-    .header-title {
-      font-size: 18px;
-      font-weight: 800;
-      text-align: center;
-      color: #0f172a;
-      letter-spacing: 0.5px;
-      flex: 1;
-    }
-
-    .spks-no-box {
-      text-align: right;
-    }
-
-    .spks-no-box .label {
-      font-size: 11px;
-      font-weight: 800;
-      margin-bottom: 2px;
-      color: #334155;
-      text-transform: uppercase;
-    }
-
-    .spks-no-box input {
-      font-size: 14px;
-      font-weight: 800;
-      text-align: center;
-      width: 130px;
-      border: 1.5px solid #475569;
-      border-radius: 4px;
-      padding: 3px 6px;
-      background-color: #f8fafc;
-      color: #0f172a;
-      outline: none;
-    }
-
-    .spks-no-box input:focus {
-      border-color: #2563eb;
-      background-color: #ffffff;
-    }
-
-    /* Form Table Layout Ringkas */
-    .form-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 8px;
-      border: 1.5px solid #475569;
-    }
-
-    .form-table td {
-      border: 1px solid #64748b;
-      padding: 4px 8px;
-      vertical-align: middle;
-      font-size: 12.5px;
-    }
-
-    .label-col {
-      width: 15%;
-      font-weight: 700;
-      color: #0f172a;
-      background-color: #f1f5f9;
-      white-space: nowrap;
-    }
-
-    .colon-col {
-      width: 12px;
-      text-align: center;
-      font-weight: 700;
-      color: #334155;
-      background-color: #f1f5f9;
-    }
-
-    .input-col input {
-      width: 100%;
-      border: none;
-      outline: none;
-      font-size: 12.5px;
-      background: #ffffff;
-      color: #0f172a;
-      font-weight: 600;
-      padding: 2px 4px;
-    }
-
-    /* Table Harga Ringkas */
-    .harga-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 8px;
-      border: 1.5px solid #0284c7;
-      background-color: #e0f2fe;
-    }
-
-    .harga-table td {
-      border: 1px solid #0284c7;
-      padding: 5px 10px;
-      font-size: 12.5px;
-      vertical-align: middle;
-    }
-
-    .harga-box {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .harga-box label {
-      font-weight: 800;
-      white-space: nowrap;
-      color: #0369a1;
-      font-size: 12.5px;
-    }
-
-    .harga-box input {
-      width: 100%;
-      border: 1px solid #0284c7;
-      border-radius: 4px;
-      padding: 3px 6px;
-      outline: none;
-      font-size: 12.5px;
-      font-weight: 700;
-      background-color: #ffffff;
-      color: #0f172a;
-    }
-
-    /* Container Gambar + Form Section 2 */
-    .section2-container {
-      display: flex;
-      border: 1.5px solid #475569;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-    }
-
-    .section2-container .form-table {
-      border: none;
-      margin-bottom: 0;
-      flex: 1 1 450px;
-    }
-
-    .image-upload-col {
-      width: 210px;
-      border-left: 1.5px solid #475569;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background-color: #f8fafc;
-      flex-grow: 0;
-      flex-shrink: 0;
-    }
-
-    .image-preview-box {
-      width: 100%;
-      height: 140px;
-      border: 1.5px dashed #64748b;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #ffffff;
-      overflow: hidden;
-      margin-bottom: 6px;
-      position: relative;
-    }
-
-    .image-preview-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    .image-placeholder-text {
-      color: #64748b;
-      font-size: 11px;
-      font-weight: 600;
-      text-align: center;
-      padding: 4px;
-    }
-
-    .btn-upload-label {
-      background-color: #2563eb;
-      color: #ffffff;
-      padding: 5px 12px;
-      font-size: 11px;
-      font-weight: 700;
-      border-radius: 4px;
-      cursor: pointer;
-      display: inline-block;
-      text-align: center;
-    }
-
-    .btn-upload-label:hover {
-      background-color: #1d4ed8;
-    }
-
-    /* Note Section */
-    .note {
-      color: #dc2626;
-      font-size: 11px;
-      font-weight: 700;
-      margin-top: 6px;
-      line-height: 1.4;
-      text-align: left;
-      background-color: #fef2f2;
-      padding: 6px 10px;
-      border-radius: 4px;
-      border: 1px solid #fca5a5;
-    }
-
-    /* Footer & Action Area */
-    .footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-top: 25px;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-
-    .signature-box {
-      text-align: center;
-      width: 180px;
-    }
-
-    .signature-line {
-      border-bottom: 2px solid #334155;
-      margin-bottom: 6px;
-    }
-
-    .signature-text {
-      font-size: 11.5px;
-      font-weight: 800;
-      color: #1e293b;
-    }
-
-    .button-group {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 2px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .btn {
-      background-color: #2563eb;
-      color: #ffffff;
-      border: none;
-      border-radius: 4px;
-      padding: 7px 15px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .btn:hover {
-      background-color: #1d4ed8;
-    }
-
-    .btn:disabled {
-      background-color: #94a3b8 !important;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-
-    .btn-excel {
-      background-color: #16a34a;
-    }
-
-    .btn-excel:hover {
-      background-color: #15803d;
-    }
-
-    .btn-import {
-      background-color: #0284c7;
-    }
-
-    .btn-import:hover {
-      background-color: #0369a1;
-    }
-
-    .btn-cancel {
-      background-color: #475569 !important;
-    }
-
-    /* Tabel Riwayat Data Ringkas */
-    .history-section {
-      width: 100%;
-      max-width: 1100px;
-      margin-top: 15px;
-      background: #ffffff;
-      padding: 16px;
-      border-radius: 8px;
-      border: 2px solid #64748b;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .history-header h3 {
-      margin: 0;
-      font-size: 14.5px;
-      font-weight: 800;
-      color: #0f172a;
-    }
-
-    .search-box {
-      margin-bottom: 12px;
-      display: flex;
-      gap: 8px;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 7px 12px;
-      font-size: 12.5px;
-      border: 1.5px solid #64748b;
-      border-radius: 4px;
-      outline: none;
-    }
-
-    .search-box input:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-    }
-
-    .table-responsive {
-      overflow-x: auto;
-    }
-
-    .history-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 11.5px;
-      min-width: 950px;
-    }
-
-    .history-table th, .history-table td {
-      border: 1px solid #64748b;
-      padding: 5px 8px;
-      text-align: left;
-    }
-
-    .history-table th {
-      background-color: #e2e8f0;
-      color: #0f172a;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .btn-action {
-      cursor: pointer;
-      color: #fff;
-      border: none;
-      padding: 3px 6px;
-      border-radius: 3px;
-      font-size: 10.5px;
-      font-weight: 700;
-    }
-
-    /* ===== STYLING MODAL LOGIN ===== */
-    .login-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(15, 23, 42, 0.95);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-
-    .login-card {
-      background-color: #ffffff;
-      padding: 30px 25px;
-      border-radius: 8px;
-      width: 100%;
-      max-width: 360px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      text-align: center;
-    }
-
-    .login-card h2 {
-      margin-top: 0;
-      margin-bottom: 20px;
-      font-size: 20px;
-      color: #0f172a;
-    }
-
-    .login-field {
-      margin-bottom: 15px;
-      text-align: left;
-    }
-
-    .login-field label {
-      display: block;
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 5px;
-      color: #334155;
-    }
-
-    .login-field input {
-      width: 100%;
-      padding: 8px 10px;
-      font-size: 13px;
-      border: 1.5px solid #64748b;
-      border-radius: 4px;
-      outline: none;
-    }
-
-    .login-field input:focus {
-      border-color: #2563eb;
-    }
-
-    .login-error {
-      color: #dc2626;
-      font-size: 11.5px;
-      margin-bottom: 12px;
-      display: none;
-      font-weight: 600;
-    }
-
-    .user-info-badge {
-      font-size: 11px;
-      font-weight: bold;
-      color: #2563eb;
-      margin-top: 2px;
-      display: block;
-    }
-
-    .btn-logout {
-      background-color: #dc2626;
-      color: #fff;
-      border: none;
-      padding: 4px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 4px;
-    }
-
-    .btn-logout:hover {
-      background-color: #b91c1c;
-    }
-
-    /* ===== RESPONSIVE MOBILE STYLING ===== */
-    @media screen and (max-width: 768px) {
-      body {
-        padding: 5px;
-      }
-
-      .container {
-        padding: 12px;
-      }
-
-      .header {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-      }
-
-      .header-title {
-        font-size: 15px;
-      }
-
-      .spks-no-box {
-        text-align: center;
-        width: 100%;
-      }
-
-      .spks-no-box input {
-        width: 100%;
-      }
-
-      .label-col {
-        width: 30%;
-      }
-
-      .harga-table tr {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .harga-table td {
-        width: 100% !important;
-        border-right: none;
-        border-bottom: 1px solid #0284c7;
-      }
-
-      .image-upload-col {
-        width: 100%;
-        border-left: none;
-        border-top: 1.5px solid #475569;
-      }
-
-      .footer {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .signature-box {
-        width: 100%;
-      }
-
-      .button-group {
-        width: 100%;
-        flex-direction: column;
-      }
-
-      .btn {
-        width: 100%;
-      }
-    }
-
-    /* Print Styling */
-    @media print {
-      body {
-        background-color: #fff;
-        padding: 0;
-      }
-      .container {
-        border: 2px solid #000;
-        box-shadow: none;
-        border-radius: 0;
-        width: 100%;
-        max-width: 100%;
-        padding: 10px;
-      }
-      .spks-no-box input, .harga-box input {
-        border: none;
-        background: transparent;
-      }
-      .note {
-        background: transparent;
-        border: none;
-        padding: 0;
-      }
-      .btn-upload-label, #inputGambar, #btnHapusGambar, .button-group, .history-section, .btn-logout, .login-overlay, .user-info-badge {
-        display: none !important;
-      }
-      .image-preview-box {
-        border: none;
-      }
-    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: #e2e8f0; color: #0f172a; display: flex; flex-direction: column; align-items: center; padding: 15px 10px; margin: 0; min-height: 100vh; }
+    .container { width: 100%; max-width: 1100px; background-color: #ffffff; border: 2px solid #64748b; border-radius: 8px; padding: 18px 22px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #334155; gap: 10px; flex-wrap: wrap; }
+    .logo-left-img { max-height: 38px; width: auto; object-fit: contain; display: block; }
+    .header-title { font-size: 18px; font-weight: 800; text-align: center; color: #0f172a; letter-spacing: 0.5px; flex: 1; }
+    .spks-no-box { text-align: right; }
+    .spks-no-box .label { font-size: 11px; font-weight: 800; margin-bottom: 2px; color: #334155; text-transform: uppercase; }
+    .spks-no-box input { font-size: 14px; font-weight: 800; text-align: center; width: 130px; border: 1.5px solid #475569; border-radius: 4px; padding: 3px 6px; background-color: #f8fafc; color: #0f172a; outline: none; }
+    .form-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; border: 1.5px solid #475569; }
+    .form-table td { border: 1px solid #64748b; padding: 4px 8px; vertical-align: middle; font-size: 12.5px; }
+    .label-col { width: 15%; font-weight: 700; color: #0f172a; background-color: #f1f5f9; white-space: nowrap; }
+    .colon-col { width: 12px; text-align: center; font-weight: 700; color: #334155; background-color: #f1f5f9; }
+    .input-col input { width: 100%; border: none; outline: none; font-size: 12.5px; background: #ffffff; color: #0f172a; font-weight: 600; padding: 2px 4px; }
+    .harga-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; border: 1.5px solid #0284c7; background-color: #e0f2fe; }
+    .harga-table td { border: 1px solid #0284c7; padding: 5px 10px; font-size: 12.5px; vertical-align: middle; }
+    .harga-box { display: flex; align-items: center; gap: 6px; }
+    .harga-box label { font-weight: 800; white-space: nowrap; color: #0369a1; font-size: 12.5px; }
+    .harga-box input { width: 100%; border: 1px solid #0284c7; border-radius: 4px; padding: 3px 6px; outline: none; font-size: 12.5px; font-weight: 700; background-color: #ffffff; color: #0f172a; }
+    .section2-container { display: flex; border: 1.5px solid #475569; margin-bottom: 8px; flex-wrap: wrap; }
+    .section2-container .form-table { border: none; margin-bottom: 0; flex: 1 1 450px; }
+    .image-upload-col { width: 210px; border-left: 1.5px solid #475569; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #f8fafc; flex-grow: 0; flex-shrink: 0; }
+    .image-preview-box { width: 100%; height: 140px; border: 1.5px dashed #64748b; border-radius: 4px; display: flex; align-items: center; justify-content: center; background-color: #ffffff; overflow: hidden; margin-bottom: 6px; position: relative; }
+    .image-preview-box img { width: 100%; height: 100%; object-fit: contain; }
+    .image-placeholder-text { color: #64748b; font-size: 11px; font-weight: 600; text-align: center; padding: 4px; }
+    .btn-upload-label { background-color: #2563eb; color: #ffffff; padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; display: inline-block; text-align: center; }
+    .note { color: #dc2626; font-size: 11px; font-weight: 700; margin-top: 6px; line-height: 1.4; text-align: left; background-color: #fef2f2; padding: 6px 10px; border-radius: 4px; border: 1px solid #fca5a5; }
+    .footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px; gap: 15px; flex-wrap: wrap; }
+    .signature-box { text-align: center; width: 180px; }
+    .signature-line { border-bottom: 2px solid #334155; margin-bottom: 6px; }
+    .signature-text { font-size: 11.5px; font-weight: 800; color: #1e293b; }
+    .button-group { display: flex; gap: 8px; margin-bottom: 2px; flex-wrap: wrap; justify-content: center; }
+    .btn { background-color: #2563eb; color: #ffffff; border: none; border-radius: 4px; padding: 7px 15px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .btn:disabled { background-color: #94a3b8 !important; cursor: not-allowed; }
+    .btn-excel { background-color: #16a34a; }
+    .btn-import { background-color: #0284c7; }
+    .btn-cancel { background-color: #475569 !important; }
+    .history-section { width: 100%; max-width: 1100px; margin-top: 15px; background: #ffffff; padding: 16px; border-radius: 8px; border: 2px solid #64748b; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+    .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
+    .history-header h3 { margin: 0; font-size: 14.5px; font-weight: 800; color: #0f172a; }
+    .search-box { margin-bottom: 12px; display: flex; gap: 8px; }
+    .search-box input { width: 100%; padding: 7px 12px; font-size: 12.5px; border: 1.5px solid #64748b; border-radius: 4px; outline: none; }
+    .table-responsive { overflow-x: auto; }
+    .history-table { width: 100%; border-collapse: collapse; font-size: 11.5px; min-width: 950px; }
+    .history-table th, .history-table td { border: 1px solid #64748b; padding: 5px 8px; text-align: left; }
+    .history-table th { background-color: #e2e8f0; color: #0f172a; font-weight: 800; white-space: nowrap; }
+    .btn-action { cursor: pointer; color: #fff; border: none; padding: 3px 6px; border-radius: 3px; font-size: 10.5px; font-weight: 700; }
+    .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.95); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+    .login-card { background-color: #ffffff; padding: 30px 25px; border-radius: 8px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+    .login-card h2 { margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #0f172a; }
+    .login-field { margin-bottom: 15px; text-align: left; }
+    .login-field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; color: #334155; }
+    .login-field input { width: 100%; padding: 8px 10px; font-size: 13px; border: 1.5px solid #64748b; border-radius: 4px; outline: none; }
+    .login-error { color: #dc2626; font-size: 11.5px; margin-bottom: 12px; display: none; font-weight: 600; }
+    .user-info-badge { font-size: 11px; font-weight: bold; color: #2563eb; margin-top: 2px; display: block; }
+    .btn-logout { background-color: #dc2626; color: #fff; border: none; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 4px; }
   </style>
 </head>
 <body>
 
-  <!-- Modal / Overlay Login -->
+  <!-- Modal Login -->
   <div id="loginOverlay" class="login-overlay">
     <div class="login-card">
       <h2>Login SPKS</h2>
@@ -632,117 +91,48 @@
     </div>
   </div>
 
-  <!-- Container Utama Form SPKS -->
+  <!-- Form SPKS Utama -->
   <div class="container" id="formContainer">
-    <!-- Header -->
     <div class="header">
       <div>
         <img src="HFI logo.png" alt="HomeFashions Lifestyle Inspirations" class="logo-left-img">
       </div>
-      <div class="header-title">
-        SPKS ( SURAT PERINTAH KERJA SAMPLE )
-      </div>
+      <div class="header-title">SPKS ( SURAT PERINTAH KERJA SAMPLE )</div>
       <div class="spks-no-box">
-        <div class="label">No. SPKS            :</div>
+        <div class="label">No. SPKS :</div>
         <input type="text" id="noSpks" placeholder="060826-001">
         <span class="user-info-badge" id="userInfoBadge"></span>
-        <div>
-          <button type="button" class="btn-logout" onclick="logout()">Log Out</button>
-        </div>
+        <div><button type="button" class="btn-logout" onclick="logout()">Log Out</button></div>
       </div>
     </div>
 
-    <!-- Form Section 1 -->
+    <!-- Form Input Section -->
     <table class="form-table">
-      <tr>
-        <td class="label-col">PO / Buyer</td>
-        <td class="colon-col">:</td>
-        <td class="input-col"><input type="text" id="poBuyer"></td>
-      </tr>
-      <tr>
-        <td class="label-col">Tanggal SPKS</td>
-        <td class="colon-col">:</td>
-        <td class="input-col"><input type="date" id="tglSpks" onchange="generateNoSpksIfNew()"></td>
-      </tr>
-      <tr>
-        <td class="label-col">Tanggal Selesai SPKS</td>
-        <td class="colon-col">:</td>
-        <td class="input-col"><input type="date" id="tglSelesaiSpks"></td>
-      </tr>
-      <tr>
-        <td class="label-col">PENGRAJIN/SUB</td>
-        <td class="colon-col">:</td>
-        <td class="input-col"><input type="text" id="pengrajin"></td>
-      </tr>
+      <tr><td class="label-col">PO / Buyer</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="poBuyer"></td></tr>
+      <tr><td class="label-col">Tanggal SPKS</td><td class="colon-col">:</td><td class="input-col"><input type="date" id="tglSpks" onchange="generateNoSpksIfNew()"></td></tr>
+      <tr><td class="label-col">Tanggal Selesai SPKS</td><td class="colon-col">:</td><td class="input-col"><input type="date" id="tglSelesaiSpks"></td></tr>
+      <tr><td class="label-col">PENGRAJIN/SUB</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="pengrajin"></td></tr>
     </table>
 
-    <!-- 2 Kolom Harga Sejajar Horizontal -->
     <table class="harga-table">
       <tr>
-        <td style="width: 50%;">
-          <div class="harga-box">
-            <label>Harga Sample Rp :</label>
-            <input type="number" id="hargaSample" placeholder="0">
-          </div>
-        </td>
-        <td style="width: 50%;">
-          <div class="harga-box">
-            <label>Harga Revisi Rp :</label>
-            <input type="number" id="hargaProduksi" placeholder="0">
-          </div>
-        </td>
+        <td style="width: 50%;"><div class="harga-box"><label>Harga Sample Rp :</label><input type="number" id="hargaSample" placeholder="0"></div></td>
+        <td style="width: 50%;"><div class="harga-box"><label>Harga Revisi Rp :</label><input type="number" id="hargaProduksi" placeholder="0"></div></td>
       </tr>
     </table>
 
-    <!-- Form Section 2 + Insert Gambar Kanan -->
     <div class="section2-container">
       <table class="form-table">
-        <tr>
-          <td class="label-col">Nama Item</td>
-          <td class="colon-col">:</td>
-          <td class="input-col"><input type="text" id="namaItem"></td>
-        </tr>
-        <tr>
-          <td class="label-col">Jumlah Item</td>
-          <td class="colon-col">:</td>
-          <td class="input-col"><input type="number" id="jumlahItem"></td>
-        </tr>
-        <tr>
-          <td class="label-col">Ukuran</td>
-          <td class="colon-col">:</td>
-          <td class="input-col"><input type="text" id="ukuran"></td>
-        </tr>
-        <tr>
-          <td class="label-col">Material 1</td>
-          <td class="colon-col">:</td>
-          <td class="input-col"><input type="text" id="material1"></td>
-        </tr>
-        <tr>
-          <td class="label-col">Material 2</td>
-          <td class="colon-col">:</td>
-          <td class="input-col"><input type="text" id="material2"></td>
-        </tr>
-        <tr>
-          <td class="label-col">Material 3</td>
-          <td class="colon-col">:</td>
-          <td class="input-col"><input type="text" id="material3"></td>
-        </tr>
-
-        <!-- Kolom Berat Tunggal -->
-        <tr>
-          <td class="label-col">Berat ( KG )</td>
-          <td class="colon-col">:</td>
-          <td class="input-col"><input type="number" step="0.01" id="berat" placeholder="0"></td>
-        </tr>
-
-        <tr>
-          <td class="label-col">Keterangan</td>
-          <td class="colon-col">:</td>
-          <td class="input-col"><input type="text" id="keterangan"></td>
-        </tr>
+        <tr><td class="label-col">Nama Item</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="namaItem"></td></tr>
+        <tr><td class="label-col">Jumlah Item</td><td class="colon-col">:</td><td class="input-col"><input type="number" id="jumlahItem"></td></tr>
+        <tr><td class="label-col">Ukuran</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="ukuran"></td></tr>
+        <tr><td class="label-col">Material 1</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material1"></td></tr>
+        <tr><td class="label-col">Material 2</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material2"></td></tr>
+        <tr><td class="label-col">Material 3</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material3"></td></tr>
+        <tr><td class="label-col">Berat ( KG )</td><td class="colon-col">:</td><td class="input-col"><input type="number" step="0.01" id="berat" placeholder="0"></td></tr>
+        <tr><td class="label-col">Keterangan</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="keterangan"></td></tr>
       </table>
 
-      <!-- Area Upload Gambar Kanan -->
       <div class="image-upload-col">
         <div class="image-preview-box" id="previewContainer">
           <span class="image-placeholder-text" id="placeholderText">Gambar Item</span>
@@ -754,85 +144,54 @@
       </div>
     </div>
 
-    <!-- Note Text -->
-    <div class="note">
-      *Ajuan harga revisi terjadi apabila sampel yang sudah dibuat ada permintaan perbaikan (Perbaikan dari pabrik)
-    </div>
+    <div class="note">*Ajuan harga revisi terjadi apabila sampel yang sudah dibuat ada permintaan perbaikan (Perbaikan dari pabrik)</div>
 
-    <!-- Footer Signatures & Action Buttons -->
     <div class="footer">
-      <div class="signature-box">
-        <div class="signature-line"></div>
-        <div class="signature-text">Pembuat SPKS</div>
-      </div>
-
+      <div class="signature-box"><div class="signature-line"></div><div class="signature-text">Pembuat SPKS</div></div>
       <div class="button-group">
-        <button class="btn" id="btnSimpan" onclick="simpanData()">SIMPAN</button>
+        <button class="btn" id="btnSimpan" onclick="simpanData()">SIMPAN CLOUD</button>
         <button class="btn btn-cancel" id="btnBatal" onclick="batalEdit()" style="display:none;">BATAL EDIT</button>
         <button class="btn btn-excel" onclick="unduhExcelLangsung()">UNDUH EXCEL</button>
-        <button class="btn" style="background-color: #0284c7;" onclick="cetakForm()">CETAK / PDF</button>
+        <button class="btn" style="background-color: #0284c7;" onclick="window.print()">CETAK / PDF</button>
       </div>
-
-      <div class="signature-box">
-        <div class="signature-line"></div>
-        <div class="signature-text">Penerima SPKS</div>
-      </div>
+      <div class="signature-box"><div class="signature-line"></div><div class="signature-text">Penerima SPKS</div></div>
     </div>
   </div>
 
-  <!-- Riwayat Data Tersimpan -->
+  <!-- Table Data Cloud -->
   <div class="history-section">
     <div class="history-header">
-      <h3>Daftar Data SPKS Tersimpan</h3>
-      <div>
-        <label for="fileImportExcel" class="btn btn-import" id="btnImportExcelLabel" style="display: inline-block; cursor: pointer;">Import Excel</label>
-        <input type="file" id="fileImportExcel" accept=".xlsx, .xls, .csv" style="display:none;" onchange="importExcelData(event)">
-        <button class="btn btn-excel" onclick="unduhSemuaExcel()">Export Semua (Excel)</button>
-        <button class="btn" id="btnHapusSemua" style="background-color: #dc2626;" onclick="hapusSemuaData()">Hapus Semua</button>
-      </div>
+      <h3>Daftar Data SPKS Tersimpan (Cloud Database)</h3>
     </div>
-
-    <!-- Field Cari Data SPKS -->
     <div class="search-box">
-      <input type="text" id="searchInput" onkeyup="tampilkanData()" placeholder="Cari No. SPKS, Buyer, Pengrajin, Nama Item, Material, Berat...">
+      <input type="text" id="searchInput" onkeyup="tampilkanData()" placeholder="Cari No. SPKS, Buyer, Pengrajin, Nama Item...">
     </div>
-
     <div class="table-responsive">
       <table class="history-table">
         <thead>
           <tr id="headerRow">
-            <th>No</th>
-            <th>Foto</th>
-            <th>No. SPKS</th>
-            <th>PO / Buyer</th>
-            <th>Tgl SPKS</th>
-            <th>Tgl Selesai</th>
-            <th>Pengrajin</th>
-            <th>Harga Sample</th>
-            <th>Harga Revisi</th>
-            <th>Nama Item</th>
-            <th>Jumlah</th>
-            <th>Ukuran</th>
-            <th>Material 1</th>
-            <th>Material 2</th>
-            <th>Material 3</th>
-            <th>Berat (KG)</th>
-            <th>Keterangan</th>
-            <th id="thAksi">Aksi</th>
+            <th>No</th><th>Foto</th><th>No. SPKS</th><th>PO / Buyer</th><th>Tgl SPKS</th><th>Tgl Selesai</th><th>Pengrajin</th><th>Harga Sample</th><th>Harga Revisi</th><th>Nama Item</th><th>Jumlah</th><th>Ukuran</th><th>Material 1</th><th>Material 2</th><th>Material 3</th><th>Berat (KG)</th><th>Keterangan</th><th id="thAksi">Aksi</th>
           </tr>
         </thead>
-        <tbody id="tabelSimpan">
-        </tbody>
+        <tbody id="tabelSimpan"></tbody>
       </table>
     </div>
   </div>
 
   <script>
-    // ===== DAFTAR USER & ROLE =====
+    // ===== CONFIGURASI SUPABASE CLOUD =====
+    // GANTI TULISAN DI DALAM TANDA KUTIP DENGAN DATA DARI SUPABASE ANDA
+    const SUPABASE_URL = "https://gybumgaubajrhsytnatm.supabase.co"; 
+    const SUPABASE_KEY = "sb_publishable_fN7sVGnbrS6CnvaSxiacLw_ZeI6wlQ_";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
     const USERS = [
       { username: "admin", password: "123", role: "admin" },
       { username: "RUDIYANTO", password: "123", role: "user" }
     ];
+
+    let editId = null;
+    let base64Gambar = "";
 
     function cekStatusLogin() {
       const loggedRole = sessionStorage.getItem('spks_logged_role');
@@ -852,74 +211,42 @@
       event.preventDefault();
       const user = document.getElementById('username').value.trim();
       const pass = document.getElementById('password').value.trim();
-      const errorMsg = document.getElementById('loginError');
-
       const foundUser = USERS.find(u => u.username === user && u.password === pass);
 
       if (foundUser) {
         sessionStorage.setItem('spks_logged_role', foundUser.role);
         sessionStorage.setItem('spks_logged_user', foundUser.username);
-        errorMsg.style.display = 'none';
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
+        document.getElementById('loginError').style.display = 'none';
         cekStatusLogin();
         tampilkanData();
       } else {
-        errorMsg.style.display = 'block';
+        document.getElementById('loginError').style.display = 'block';
       }
     }
 
     function logout() {
-      if (confirm("Apakah Anda yakin ingin keluar?")) {
-        sessionStorage.removeItem('spks_logged_role');
-        sessionStorage.removeItem('spks_logged_user');
-        cekStatusLogin();
-      }
+      sessionStorage.removeItem('spks_logged_role');
+      sessionStorage.removeItem('spks_logged_user');
+      cekStatusLogin();
     }
 
     function terapkanAksesRole(role) {
       const isUser = (role === 'user');
-      const btnSimpan = document.getElementById('btnSimpan');
-
-      // User bisa lihat form, tetapi Tombol SIMPAN dinonaktifkan
-      if (isUser) {
-        btnSimpan.disabled = true;
-        btnSimpan.title = "Anda tidak memiliki hak akses untuk menyimpan data";
-      } else {
-        btnSimpan.disabled = false;
-        btnSimpan.title = "";
-      }
-
-      // Sembunyikan/Tampilkan Tombol Tambahan
-      document.getElementById('btnImportExcelLabel').style.display = isUser ? 'none' : 'inline-block';
-      document.getElementById('btnHapusSemua').style.display = isUser ? 'none' : 'inline-block';
-
-      // Sembunyikan / Tampilkan Header Kolom "Aksi" pada Tabel
+      document.getElementById('btnSimpan').disabled = isUser;
       document.getElementById('thAksi').style.display = isUser ? 'none' : 'table-cell';
     }
-
-    // ===== LOGIC UTAMA SPKS =====
-    let editIndex = -1;
-    let base64Gambar = "";
 
     function generateNoSpks() {
       const tglInput = document.getElementById('tglSpks').value;
       let dateObj = tglInput ? new Date(tglInput) : new Date();
-
       const dd = String(dateObj.getDate()).padStart(2, '0');
       const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
       const yy = String(dateObj.getFullYear()).slice(-2);
-      
       const randomSeq = String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
-
       document.getElementById('noSpks').value = `${dd}${mm}${yy}-${randomSeq}`;
     }
 
-    function generateNoSpksIfNew() {
-      if (editIndex === -1) {
-        generateNoSpks();
-      }
-    }
+    function generateNoSpksIfNew() { if (!editId) generateNoSpks(); }
 
     function previewImage(input) {
       if (input.files && input.files[0]) {
@@ -944,30 +271,146 @@
       document.getElementById('btnHapusGambar').style.display = 'none';
     }
 
-    function getFormData() {
-      return {
-        noSpks: document.getElementById('noSpks').value,
-        poBuyer: document.getElementById('poBuyer').value,
-        tglSpks: document.getElementById('tglSpks').value,
-        tglSelesaiSpks: document.getElementById('tglSelesaiSpks').value,
+    // ===== CRUD SUPABASE DATABASE =====
+    async function simpanData() {
+      if (sessionStorage.getItem('spks_logged_role') === 'user') return;
+
+      const payload = {
+        no_spks: document.getElementById('noSpks').value,
+        po_buyer: document.getElementById('poBuyer').value,
+        tgl_spks: document.getElementById('tglSpks').value || null,
+        tgl_selesai_spks: document.getElementById('tglSelesaiSpks').value || null,
         pengrajin: document.getElementById('pengrajin').value,
-        hargaSample: document.getElementById('hargaSample').value,
-        hargaProduksi: document.getElementById('hargaProduksi').value,
-        namaItem: document.getElementById('namaItem').value,
-        jumlahItem: document.getElementById('jumlahItem').value,
+        harga_sample: document.getElementById('hargaSample').value ? parseFloat(document.getElementById('hargaSample').value) : null,
+        harga_produksi: document.getElementById('hargaProduksi').value ? parseFloat(document.getElementById('hargaProduksi').value) : null,
+        nama_item: document.getElementById('namaItem').value,
+        jumlah_item: document.getElementById('jumlahItem').value ? parseInt(document.getElementById('jumlahItem').value) : null,
         ukuran: document.getElementById('ukuran').value,
         material1: document.getElementById('material1').value,
         material2: document.getElementById('material2').value,
         material3: document.getElementById('material3').value,
-        berat: document.getElementById('berat').value,
+        berat: document.getElementById('berat').value ? parseFloat(document.getElementById('berat').value) : null,
         keterangan: document.getElementById('keterangan').value,
-        gambar: base64Gambar,
-        waktuSimpan: new Date().toLocaleString('id-ID')
+        gambar: base64Gambar
       };
+
+      if (!payload.nama_item && !payload.po_buyer) {
+        alert("Isi setidaknya PO / Buyer atau Nama Item!");
+        return;
+      }
+
+      let response;
+      if (!editId) {
+        response = await supabaseClient.from('spks').insert([payload]);
+      } else {
+        response = await supabaseClient.from('spks').update(payload).eq('id', editId);
+      }
+
+      if (response.error) {
+        alert("Gagal menyimpan data ke Cloud: " + response.error.message);
+      } else {
+        alert("Data SPKS Berhasil Tersimpan di Cloud Database!");
+        resetForm();
+        tampilkanData();
+      }
+    }
+
+    async function tampilkanData() {
+      const tbody = document.getElementById('tabelSimpan');
+      const currentRole = sessionStorage.getItem('spks_logged_role');
+      const keyword = (document.getElementById('searchInput').value || '').toLowerCase();
+
+      const { data: listData, error } = await supabaseClient.from('spks').select('*').order('id', { ascending: false });
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:red;">Gagal memuat dari Cloud: ${error.message}</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = '';
+      if (!listData || listData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:#64748b;">Belum ada data tersimpan di Cloud Database</td></tr>`;
+        return;
+      }
+
+      listData.forEach((item, index) => {
+        const itemString = `${item.no_spks} ${item.po_buyer} ${item.nama_item} ${item.pengrajin}`.toLowerCase();
+        if (!keyword || itemString.includes(keyword)) {
+          const fotoTag = item.gambar ? `<img src="${item.gambar}" style="width:32px; height:32px; object-fit:cover;">` : '-';
+          let tdAksi = currentRole === 'admin' ? `<td>
+            <button class="btn-action" style="background-color:#2563eb;" onclick="editData(${item.id})">Edit</button>
+            <button class="btn-action" style="background-color:#dc2626;" onclick="hapusData(${item.id})">Hapus</button>
+          </td>` : '';
+
+          tbody.innerHTML += `<tr>
+            <td>${index + 1}</td>
+            <td>${fotoTag}</td>
+            <td><b>${item.no_spks || '-'}</b></td>
+            <td>${item.po_buyer || '-'}</td>
+            <td>${item.tgl_spks || '-'}</td>
+            <td>${item.tgl_selesai_spks || '-'}</td>
+            <td>${item.pengrajin || '-'}</td>
+            <td>${item.harga_sample ? 'Rp ' + Number(item.harga_sample).toLocaleString('id-ID') : '-'}</td>
+            <td>${item.harga_produksi ? 'Rp ' + Number(item.harga_produksi).toLocaleString('id-ID') : '-'}</td>
+            <td>${item.nama_item || '-'}</td>
+            <td>${item.jumlah_item || '-'}</td>
+            <td>${item.ukuran || '-'}</td>
+            <td>${item.material1 || '-'}</td>
+            <td>${item.material2 || '-'}</td>
+            <td>${item.material3 || '-'}</td>
+            <td>${item.berat ? item.berat + ' KG' : '-'}</td>
+            <td>${item.keterangan || '-'}</td>
+            ${tdAksi}
+          </tr>`;
+        }
+      });
+    }
+
+    async function editData(id) {
+      const { data, error } = await supabaseClient.from('spks').select('*').eq('id', id).single();
+      if (error || !data) return;
+
+      editId = id;
+      document.getElementById('noSpks').value = data.no_spks || '';
+      document.getElementById('poBuyer').value = data.po_buyer || '';
+      document.getElementById('tglSpks').value = data.tgl_spks || '';
+      document.getElementById('tglSelesaiSpks').value = data.tgl_selesai_spks || '';
+      document.getElementById('pengrajin').value = data.pengrajin || '';
+      document.getElementById('hargaSample').value = data.harga_sample || '';
+      document.getElementById('hargaProduksi').value = data.harga_produksi || '';
+      document.getElementById('namaItem').value = data.nama_item || '';
+      document.getElementById('jumlahItem').value = data.jumlah_item || '';
+      document.getElementById('ukuran').value = data.ukuran || '';
+      document.getElementById('material1').value = data.material1 || '';
+      document.getElementById('material2').value = data.material2 || '';
+      document.getElementById('material3').value = data.material3 || '';
+      document.getElementById('berat').value = data.berat || '';
+      document.getElementById('keterangan').value = data.keterangan || '';
+
+      if (data.gambar) {
+        base64Gambar = data.gambar;
+        document.getElementById('imgPreview').src = base64Gambar;
+        document.getElementById('imgPreview').style.display = 'block';
+        document.getElementById('placeholderText').style.display = 'none';
+        document.getElementById('btnHapusGambar').style.display = 'inline-block';
+      } else {
+        hapusGambar();
+      }
+
+      document.getElementById('btnSimpan').innerText = 'UPDATE DATA CLOUD';
+      document.getElementById('btnBatal').style.display = 'inline-block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function hapusData(id) {
+      if (confirm("Yakin ingin menghapus data ini dari Cloud?")) {
+        await supabaseClient.from('spks').delete().eq('id', id);
+        tampilkanData();
+      }
     }
 
     function resetForm() {
-      editIndex = -1;
+      editId = null;
       document.getElementById('poBuyer').value = '';
       document.getElementById('tglSpks').value = '';
       document.getElementById('tglSelesaiSpks').value = '';
@@ -983,448 +426,12 @@
       document.getElementById('berat').value = '';
       document.getElementById('keterangan').value = '';
       hapusGambar();
-      
-      document.getElementById('btnSimpan').innerText = 'SIMPAN';
+      document.getElementById('btnSimpan').innerText = 'SIMPAN CLOUD';
       document.getElementById('btnBatal').style.display = 'none';
-      
       generateNoSpks();
     }
 
-    function cetakForm() {
-      window.print();
-    }
-
-    function simpanData() {
-      const currentRole = sessionStorage.getItem('spks_logged_role');
-      if (currentRole === 'user') {
-        alert("Akses ditolak: User tidak memiliki wewenang menyimpan data!");
-        return;
-      }
-
-      const data = getFormData();
-      if (!data.namaItem && !data.poBuyer) {
-        alert("Harap isi setidaknya PO/Buyer atau Nama Item!");
-        return;
-      }
-
-      let listData = JSON.parse(localStorage.getItem('list_spks')) || [];
-
-      if (editIndex === -1) {
-        listData.push(data);
-        alert("Data SPKS berhasil disimpan!");
-      } else {
-        listData[editIndex] = data;
-        alert("Data SPKS berhasil diperbarui!");
-      }
-
-      localStorage.setItem('list_spks', JSON.stringify(listData));
-
-      tampilkanData();
-      resetForm();
-    }
-
-    function editData(index) {
-      const listData = JSON.parse(localStorage.getItem('list_spks')) || [];
-      const item = listData[index];
-
-      if (!item) return;
-
-      editIndex = index;
-
-      document.getElementById('noSpks').value = item.noSpks || '';
-      document.getElementById('poBuyer').value = item.poBuyer || '';
-      document.getElementById('tglSpks').value = item.tglSpks || '';
-      document.getElementById('tglSelesaiSpks').value = item.tglSelesaiSpks || '';
-      document.getElementById('pengrajin').value = item.pengrajin || '';
-      document.getElementById('hargaSample').value = item.hargaSample || '';
-      document.getElementById('hargaProduksi').value = item.hargaProduksi || '';
-      document.getElementById('namaItem').value = item.namaItem || '';
-      document.getElementById('jumlahItem').value = item.jumlahItem || '';
-      document.getElementById('ukuran').value = item.ukuran || '';
-      document.getElementById('material1').value = item.material1 || '';
-      document.getElementById('material2').value = item.material2 || '';
-      document.getElementById('material3').value = item.material3 || '';
-      document.getElementById('berat').value = item.berat || '';
-      document.getElementById('keterangan').value = item.keterangan || '';
-
-      if (item.gambar) {
-        base64Gambar = item.gambar;
-        document.getElementById('imgPreview').src = base64Gambar;
-        document.getElementById('imgPreview').style.display = 'block';
-        document.getElementById('placeholderText').style.display = 'none';
-        document.getElementById('btnHapusGambar').style.display = 'inline-block';
-      } else {
-        hapusGambar();
-      }
-
-      document.getElementById('btnSimpan').innerText = 'UPDATE DATA';
-      document.getElementById('btnBatal').style.display = 'inline-block';
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function batalEdit() {
-      resetForm();
-    }
-
-    function tampilkanData() {
-      const listData = JSON.parse(localStorage.getItem('list_spks')) || [];
-      const tbody = document.getElementById('tabelSimpan');
-      const keyword = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-      const currentRole = sessionStorage.getItem('spks_logged_role');
-      const totalColspan = currentRole === 'admin' ? 18 : 17;
-
-      tbody.innerHTML = '';
-
-      if (listData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="${totalColspan}" style="text-align:center; color:#64748b;">Belum ada data tersimpan</td></tr>`;
-        return;
-      }
-
-      let countFound = 0;
-
-      listData.forEach((item, index) => {
-        const itemString = [
-          item.noSpks,
-          item.poBuyer,
-          item.tglSpks,
-          item.tglSelesaiSpks,
-          item.pengrajin,
-          item.hargaSample,
-          item.hargaProduksi,
-          item.namaItem,
-          item.jumlahItem,
-          item.ukuran,
-          item.material1,
-          item.material2,
-          item.material3,
-          item.berat,
-          item.keterangan
-        ].join(' ').toLowerCase();
-
-        if (!keyword || itemString.includes(keyword)) {
-          countFound++;
-
-          const fotoTag = item.gambar 
-            ? `<img src="${item.gambar}" style="width:32px; height:32px; object-fit:cover; border-radius:3px;">` 
-            : '-';
-
-          // Jika Admin: tampilkan kolom & tombol aksi
-          let tdAksi = '';
-          if (currentRole === 'admin') {
-            tdAksi = `<td>
-              <button class="btn-action" style="background-color:#2563eb;" onclick="editData(${index})">Edit</button>
-              <button class="btn-action" style="background-color:#16a34a;" onclick="unduhSingleExcel(${index})">Excel</button>
-              <button class="btn-action" style="background-color:#dc2626;" onclick="hapusSatuData(${index})">Hapus</button>
-            </td>`;
-          }
-
-          const row = `<tr>
-            <td>${index + 1}</td>
-            <td>${fotoTag}</td>
-            <td><b>${item.noSpks || '-'}</b></td>
-            <td>${item.poBuyer || '-'}</td>
-            <td>${item.tglSpks || '-'}</td>
-            <td>${item.tglSelesaiSpks || '-'}</td>
-            <td>${item.pengrajin || '-'}</td>
-            <td>${item.hargaSample ? 'Rp ' + Number(item.hargaSample).toLocaleString('id-ID') : '-'}</td>
-            <td>${item.hargaProduksi ? 'Rp ' + Number(item.hargaProduksi).toLocaleString('id-ID') : '-'}</td>
-            <td>${item.namaItem || '-'}</td>
-            <td>${item.jumlahItem || '-'}</td>
-            <td>${item.ukuran || '-'}</td>
-            <td>${item.material1 || '-'}</td>
-            <td>${item.material2 || '-'}</td>
-            <td>${item.material3 || '-'}</td>
-            <td>${item.berat ? item.berat + ' KG' : '-'}</td>
-            <td>${item.keterangan || '-'}</td>
-            ${tdAksi}
-          </tr>`;
-          tbody.innerHTML += row;
-        }
-      });
-
-      if (countFound === 0) {
-        tbody.innerHTML = `<tr><td colspan="${totalColspan}" style="text-align:center; color:#64748b;">Tidak ada data yang sesuai dengan pencarian</td></tr>`;
-      }
-    }
-
-    async function generateFormExcel(data, filename) {
-      const workbook = new ExcelJS.Workbook();
-      const ws = workbook.addWorksheet('SPKS Form', { views: [{ showGridLines: true }] });
-
-      ws.getColumn('A').width = 4;
-      ws.getColumn('B').width = 24;
-      ws.getColumn('C').width = 4;
-      ws.getColumn('D').width = 35;
-      ws.getColumn('E').width = 25;
-
-      const borderThin = {
-        top: { style: 'thin' },
-        left: { style: 'thin' },
-        bottom: { style: 'thin' },
-        right: { style: 'thin' }
-      };
-
-      ws.mergeCells('B2:C2');
-      const logoCell = ws.getCell('B2');
-      logoCell.value = "HomeFashions";
-      logoCell.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FF689F38' } };
-
-      ws.mergeCells('D2:D3');
-      const titleCell = ws.getCell('D2');
-      titleCell.value = "SPKS ( SURAT PERINTAH KERJA SAMPLE )";
-      titleCell.font = { name: 'Arial', size: 13, bold: true };
-      titleCell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-
-      ws.getCell('E2').value = "No. SPKS            :";
-      ws.getCell('E2').font = { name: 'Arial', size: 9, bold: true };
-      ws.getCell('E2').alignment = { horizontal: 'right' };
-
-      ws.getCell('E3').value = data.noSpks || "";
-      ws.getCell('E3').font = { name: 'Arial', size: 12, bold: true };
-      ws.getCell('E3').alignment = { horizontal: 'left' };
-
-      function makeFormRow(rowNum, label, val) {
-        const cellLabel = ws.getCell(`B${rowNum}`);
-        cellLabel.value = label;
-        cellLabel.font = { name: 'Arial', size: 10, bold: true };
-        cellLabel.alignment = { vertical: 'middle', horizontal: 'left' };
-        cellLabel.border = borderThin;
-
-        const cellColon = ws.getCell(`C${rowNum}`);
-        cellColon.value = ":";
-        cellColon.font = { name: 'Arial', size: 10, bold: true };
-        cellColon.alignment = { horizontal: 'center', vertical: 'middle' };
-        cellColon.border = borderThin;
-
-        const cellVal = ws.getCell(`D${rowNum}`);
-        cellVal.value = val || "";
-        cellVal.font = { name: 'Arial', size: 10 };
-        cellVal.alignment = { vertical: 'middle', horizontal: 'left' };
-        cellVal.border = borderThin;
-
-        ws.getCell(`E${rowNum}`).border = { top: { style: 'thin' }, bottom: { style: 'thin' } };
-      }
-
-      makeFormRow(5, "PO / Buyer", data.poBuyer);
-      makeFormRow(6, "Tanggal SPKS", data.tglSpks);
-      makeFormRow(7, "Tanggal Selesai SPKS", data.tglSelesaiSpks);
-      makeFormRow(8, "PENGRAJIN/SUB", data.pengrajin);
-
-      ws.getCell('B9').value = `Harga Sample Rp: ${data.hargaSample || '-'}`;
-      ws.mergeCells('B9:C9');
-      ws.getCell('D9').value = `Harga Revisi Rp: ${data.hargaProduksi || '-'}`;
-
-      makeFormRow(11, "Nama Item", data.namaItem);
-      makeFormRow(12, "Jumlah Item", data.jumlahItem ? Number(data.jumlahItem) : "");
-      makeFormRow(13, "Ukuran", data.ukuran);
-      makeFormRow(14, "Material 1", data.material1);
-      makeFormRow(15, "Material 2", data.material2);
-      makeFormRow(16, "Material 3", data.material3);
-      makeFormRow(17, "Berat ( KG )", data.berat ? `${data.berat} KG` : "");
-      makeFormRow(18, "Keterangan", data.keterangan);
-
-      if (data.gambar) {
-        let extension = 'png';
-        if (data.gambar.startsWith('data:image/jpeg') || data.gambar.startsWith('data:image/jpg')) {
-          extension = 'jpeg';
-        }
-        
-        const imageId = workbook.addImage({
-          base64: data.gambar,
-          extension: extension,
-        });
-
-        ws.addImage(imageId, {
-          tl: { col: 4, row: 10 },
-          br: { col: 5, row: 18 }
-        });
-      }
-
-      ws.mergeCells('B19:D20');
-      const noteCell = ws.getCell('B19');
-      noteCell.value = "*Ajuan harga revisi terjadi apabila sampel yang\nsudah dibuat ada permintaan perbaikan (Perbaikan dari pabrik)";
-      noteCell.font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FFD32F2F' } };
-      noteCell.alignment = { wrapText: true, vertical: 'top', horizontal: 'left' };
-
-      ws.getCell('B23').value = "Pembuat SPKS";
-      ws.getCell('B23').font = { name: 'Arial', size: 9, bold: true };
-      ws.getCell('B23').alignment = { horizontal: 'center' };
-      ws.getCell('B22').border = { bottom: { style: 'medium' } };
-
-      ws.getCell('E23').value = "Penerima SPKS";
-      ws.getCell('E23').font = { name: 'Arial', size: 9, bold: true };
-      ws.getCell('E23').alignment = { horizontal: 'center' };
-      ws.getCell('E22').border = { bottom: { style: 'medium' } };
-
-      const buffer = await workbook.xlsx.writeBuffer();
-      saveAs(new Blob([buffer]), filename);
-    }
-
-    function unduhExcelLangsung() {
-      const data = getFormData();
-      generateFormExcel(data, `SPKS_${data.noSpks || 'Form'}.xlsx`);
-    }
-
-    function unduhSingleExcel(index) {
-      const listData = JSON.parse(localStorage.getItem('list_spks')) || [];
-      const data = listData[index];
-      generateFormExcel(data, `SPKS_${data.noSpks || index+1}.xlsx`);
-    }
-
-    async function unduhSemuaExcel() {
-      const listData = JSON.parse(localStorage.getItem('list_spks')) || [];
-      if (listData.length === 0) {
-        alert("Tidak ada data untuk diunduh!");
-        return;
-      }
-
-      const workbook = new ExcelJS.Workbook();
-      const ws = workbook.addWorksheet('Rekap SPKS');
-
-      ws.columns = [
-        { header: 'No', key: 'no', width: 6 },
-        { header: 'No. SPKS', key: 'noSpks', width: 16 },
-        { header: 'PO / Buyer', key: 'poBuyer', width: 20 },
-        { header: 'Tanggal SPKS', key: 'tglSpks', width: 15 },
-        { header: 'Tanggal Selesai', key: 'tglSelesaiSpks', width: 15 },
-        { header: 'Pengrajin / SUB', key: 'pengrajin', width: 20 },
-        { header: 'Harga Sample', key: 'hargaSample', width: 18 },
-        { header: 'Harga Revisi', key: 'hargaProduksi', width: 18 },
-        { header: 'Nama Item', key: 'namaItem', width: 25 },
-        { header: 'Jumlah', key: 'jumlahItem', width: 10 },
-        { header: 'Ukuran', key: 'ukuran', width: 15 },
-        { header: 'Material 1', key: 'material1', width: 15 },
-        { header: 'Material 2', key: 'material2', width: 15 },
-        { header: 'Material 3', key: 'material3', width: 15 },
-        { header: 'Berat (KG)', key: 'berat', width: 12 },
-        { header: 'Keterangan', key: 'keterangan', width: 25 },
-        { header: 'Waktu Simpan', key: 'waktuSimpan', width: 20 }
-      ];
-
-      ws.getRow(1).font = { bold: true, color: { argb: 'FFFFFF' } };
-      ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF16A34A' } };
-
-      listData.forEach((item, index) => {
-        ws.addRow({
-          no: index + 1,
-          noSpks: item.noSpks,
-          poBuyer: item.poBuyer,
-          tglSpks: item.tglSpks,
-          tglSelesaiSpks: item.tglSelesaiSpks,
-          pengrajin: item.pengrajin,
-          hargaSample: item.hargaSample ? Number(item.hargaSample) : "",
-          hargaProduksi: item.hargaProduksi ? Number(item.hargaProduksi) : "",
-          namaItem: item.namaItem,
-          jumlahItem: item.jumlahItem ? Number(item.jumlahItem) : "",
-          ukuran: item.ukuran,
-          material1: item.material1,
-          material2: item.material2,
-          material3: item.material3,
-          berat: item.berat ? Number(item.berat) : "",
-          keterangan: item.keterangan,
-          waktuSimpan: item.waktuSimpan
-        });
-      });
-
-      const buffer = await workbook.xlsx.writeBuffer();
-      saveAs(new Blob([buffer]), `Rekap_Tabel_SPKS_${new Date().getTime()}.xlsx`);
-    }
-
-    function importExcelData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: 'array' });
-          const firstSheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[firstSheetName];
-
-          const jsonRows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
-          if (jsonRows.length === 0) {
-            alert("File Excel kosong atau format tidak sesuai!");
-            return;
-          }
-
-          let listData = JSON.parse(localStorage.getItem('list_spks')) || [];
-          let importedCount = 0;
-
-          const getVal = (row, ...keys) => {
-            for (let k of keys) {
-              for (let key in row) {
-                if (key.trim().toLowerCase() === k.trim().toLowerCase()) {
-                  return row[key];
-                }
-              }
-            }
-            return "";
-          };
-
-          jsonRows.forEach(row => {
-            const newItem = {
-              noSpks: String(getVal(row, "No. SPKS", "No SPKS", "noSpks") || ""),
-              poBuyer: String(getVal(row, "PO / Buyer", "PO/Buyer", "Buyer", "poBuyer") || ""),
-              tglSpks: String(getVal(row, "Tanggal SPKS", "Tgl SPKS", "tglSpks") || ""),
-              tglSelesaiSpks: String(getVal(row, "Tanggal Selesai", "Tanggal Selesai SPKS", "Tgl Selesai", "tglSelesaiSpks") || ""),
-              pengrajin: String(getVal(row, "Pengrajin / SUB", "Pengrajin", "SUB", "pengrajin") || ""),
-              hargaSample: String(getVal(row, "Harga Sample", "hargaSample") || ""),
-              hargaProduksi: String(getVal(row, "Harga Revisi", "hargaProduksi") || ""),
-              namaItem: String(getVal(row, "Nama Item", "namaItem") || ""),
-              jumlahItem: String(getVal(row, "Jumlah", "Jumlah Item", "jumlahItem") || ""),
-              ukuran: String(getVal(row, "Ukuran", "ukuran") || ""),
-              material1: String(getVal(row, "Material 1", "material1") || ""),
-              material2: String(getVal(row, "Material 2", "material2") || ""),
-              material3: String(getVal(row, "Material 3", "material3") || ""),
-              berat: String(getVal(row, "Berat (KG)", "Berat", "berat") || ""),
-              keterangan: String(getVal(row, "Keterangan", "keterangan") || ""),
-              gambar: "",
-              waktuSimpan: new Date().toLocaleString('id-ID')
-            };
-
-            if (newItem.noSpks || newItem.namaItem || newItem.poBuyer) {
-              listData.push(newItem);
-              importedCount++;
-            }
-          });
-
-          localStorage.setItem('list_spks', JSON.stringify(listData));
-          tampilkanData();
-          alert(`Berhasil mengimpor ${importedCount} data SPKS!`);
-
-        } catch (error) {
-          console.error(error);
-          alert("Gagal membaca file Excel! Pastikan file berupa format Excel (.xlsx / .xls) atau CSV.");
-        } finally {
-          event.target.value = '';
-        }
-      };
-
-      reader.readAsArrayBuffer(file);
-    }
-
-    function hapusSatuData(index) {
-      if (confirm("Yakin ingin menghapus data ini?")) {
-        let listData = JSON.parse(localStorage.getItem('list_spks')) || [];
-        listData.splice(index, 1);
-        localStorage.setItem('list_spks', JSON.stringify(listData));
-        if (editIndex === index) {
-          resetForm();
-        }
-        tampilkanData();
-      }
-    }
-
-    function hapusSemuaData() {
-      if (confirm("Yakin ingin menghapus semua data?")) {
-        localStorage.removeItem('list_spks');
-        resetForm();
-        tampilkanData();
-      }
-    }
+    function batalEdit() { resetForm(); }
 
     window.onload = function() {
       cekStatusLogin();
