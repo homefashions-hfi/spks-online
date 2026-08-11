@@ -186,7 +186,6 @@
 
   <script>
     // ===== CONFIGURASI SUPABASE CLOUD =====
-    // PASTI KAN DUA ISI TANDA KUTIP DI BAWAH INI DISESUAIKAN DENGAN KUNCI SUPABASE ANDA
     const SUPABASE_URL = "https://gybumgaubajrhsytnatm.supabase.co"; 
     const SUPABASE_KEY = "sb_publishable_fN7sVGnbrS6CnvaSxiacLw_ZeI6wlQ_";
     
@@ -199,9 +198,11 @@
       console.error("Gagal inisialisasi Supabase:", e);
     }
 
+    // DAFTAR AKUN PENUTUPAN HAK AKSES ROLE
     const USERS = [
       { username: "admin", password: "123", role: "admin" },
-      { username: "RUDIYANTO", password: "123", role: "user" }
+      { username: "home fashions", password: "123", role: "user" },
+      { username: "tamu", password: "123", role: "user2" } // Akun contoh untuk role user2
     ];
 
     let editId = null;
@@ -245,11 +246,20 @@
     }
 
     function terapkanAksesRole(role) {
-      const isUser = (role === 'user');
-      document.getElementById('btnSimpan').disabled = isUser;
-      document.getElementById('btnImportExcelLabel').style.display = isUser ? 'none' : 'inline-block';
-      document.getElementById('btnHapusSemua').style.display = isUser ? 'none' : 'inline-block';
-      document.getElementById('thAksi').style.display = isUser ? 'none' : 'table-cell';
+      const isUser2 = (role === 'user2');
+      const isAdmin = (role === 'admin');
+
+      // Role user2 hanya bisa melihat data
+      document.getElementById('btnSimpan').disabled = isUser2;
+      
+      // Sembunyikan Import Excel untuk role user2 saja
+      document.getElementById('btnImportExcelLabel').style.display = isUser2 ? 'none' : 'inline-block';
+      
+      // Tombol Hapus Semua hanya muncul untuk Admin (User dan User2 disembunyikan)
+      document.getElementById('btnHapusSemua').style.display = isAdmin ? 'inline-block' : 'none';
+      
+      // Kolom Aksi di tabel disembunyikan jika role user2
+      document.getElementById('thAksi').style.display = isUser2 ? 'none' : 'table-cell';
     }
 
     function generateNoSpks() {
@@ -289,7 +299,7 @@
 
     // ===== CRUD SUPABASE DATABASE =====
     async function simpanData() {
-      if (sessionStorage.getItem('spks_logged_role') === 'user') return;
+      if (sessionStorage.getItem('spks_logged_role') === 'user2') return;
       if (!supabaseClient) { alert("Konfigurasi Supabase URL & Key belum terpasang!"); return; }
 
       const payload = {
@@ -359,7 +369,9 @@
         const itemString = `${item.no_spks} ${item.po_buyer} ${item.nama_item} ${item.pengrajin}`.toLowerCase();
         if (!keyword || itemString.includes(keyword)) {
           const fotoTag = item.gambar ? `<img src="${item.gambar}" style="width:32px; height:32px; object-fit:cover;">` : '-';
-          let tdAksi = currentRole === 'admin' ? `<td>
+          
+          // Role user2 tidak dapat melihat tombol aksi Edit/Hapus
+          let tdAksi = (currentRole !== 'user2') ? `<td>
             <button class="btn-action" style="background-color:#2563eb;" onclick="editData(${item.id})">Edit</button>
             <button class="btn-action" style="background-color:#dc2626;" onclick="hapusData(${item.id})">Hapus</button>
           </td>` : '';
@@ -389,6 +401,8 @@
     }
 
     async function editData(id) {
+      if (sessionStorage.getItem('spks_logged_role') === 'user2') return;
+
       const { data, error } = await supabaseClient.from('spks').select('*').eq('id', id).single();
       if (error || !data) return;
 
@@ -425,6 +439,8 @@
     }
 
     async function hapusData(id) {
+      if (sessionStorage.getItem('spks_logged_role') === 'user2') return;
+
       if (confirm("Yakin ingin menghapus data ini dari Cloud?")) {
         await supabaseClient.from('spks').delete().eq('id', id);
         tampilkanData();
@@ -432,7 +448,11 @@
     }
 
     async function hapusSemuaData() {
-      if (sessionStorage.getItem('spks_logged_role') === 'user') return;
+      // Hanya role Admin yang diperbolehkan
+      if (sessionStorage.getItem('spks_logged_role') !== 'admin') {
+        alert("Akses ditolak: Hanya Admin yang dapat menghapus seluruh data!");
+        return;
+      }
 
       if (confirm("Yakin ingin menghapus SELURUH data dari Cloud Database?")) {
         const { error } = await supabaseClient.from('spks').delete().neq('id', 0);
@@ -534,6 +554,8 @@
     }
 
     function importExcelData(event) {
+      if (sessionStorage.getItem('spks_logged_role') === 'user2') return;
+
       const file = event.target.files[0];
       if (!file) return;
 
@@ -580,7 +602,7 @@
           const { error } = await supabaseClient.from('spks').insert(payloadBatch);
 
           if (error) {
-            alert("Gagal mengimpor data ke Cloud: " + error.message);
+            alert("Gagal mengimpor data ke Cloud: " + response.error.message);
           } else {
             alert(`Berhasil mengimpor ${payloadBatch.length} data ke Cloud Database!`);
             tampilkanData();
