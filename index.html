@@ -162,6 +162,12 @@
   <div class="history-section">
     <div class="history-header">
       <h3>Daftar Data SPKS Tersimpan (Cloud Database)</h3>
+      <div>
+        <label for="fileImportExcel" class="btn btn-import" id="btnImportExcelLabel" style="display: inline-block; cursor: pointer;">Import Excel</label>
+        <input type="file" id="fileImportExcel" accept=".xlsx, .xls, .csv" style="display:none;" onchange="importExcelData(event)">
+        <button class="btn btn-excel" onclick="unduhSemuaExcel()">Export Semua (Excel)</button>
+        <button class="btn" id="btnHapusSemua" style="background-color: #dc2626;" onclick="hapusSemuaData()">Hapus Semua</button>
+      </div>
     </div>
     <div class="search-box">
       <input type="text" id="searchInput" onkeyup="tampilkanData()" placeholder="Cari No. SPKS, Buyer, Pengrajin, Nama Item...">
@@ -180,8 +186,8 @@
 
   <script>
     // ===== CONFIGURASI SUPABASE CLOUD =====
-    // GANTI TULISAN DI DALAM TANDA KUTIP DENGAN DATA DARI SUPABASE ANDA
-    const SUPABASE_URL = "https://gybumgaubajrhsytnatm.supabase.co"; 
+    // GANTI TULISAN DI DALAM TANDA KUTIP DENGAN URL & ANON KEY DARI SUPABASE ANDA
+    const SUPABASE_URL = "https://gybumgaubajrhsytnatm.supabase.co/rest/v1/"; 
     const SUPABASE_KEY = "sb_publishable_fN7sVGnbrS6CnvaSxiacLw_ZeI6wlQ_";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -233,6 +239,8 @@
     function terapkanAksesRole(role) {
       const isUser = (role === 'user');
       document.getElementById('btnSimpan').disabled = isUser;
+      document.getElementById('btnImportExcelLabel').style.display = isUser ? 'none' : 'inline-block';
+      document.getElementById('btnHapusSemua').style.display = isUser ? 'none' : 'inline-block';
       document.getElementById('thAksi').style.display = isUser ? 'none' : 'table-cell';
     }
 
@@ -407,6 +415,140 @@
         await supabaseClient.from('spks').delete().eq('id', id);
         tampilkanData();
       }
+    }
+
+    async function hapusSemuaData() {
+      if (sessionStorage.getItem('spks_logged_role') === 'user') return;
+
+      if (confirm("Yakin ingin menghapus SELURUH data dari Cloud Database?")) {
+        const { error } = await supabaseClient.from('spks').delete().neq('id', 0);
+        if (error) {
+          alert("Gagal menghapus data: " + error.message);
+        } else {
+          alert("Semua data berhasil dihapus dari Cloud!");
+          resetForm();
+          tampilkanData();
+        }
+      }
+    }
+
+    async function unduhSemuaExcel() {
+      const { data: listData, error } = await supabaseClient.from('spks').select('*').order('id', { ascending: false });
+
+      if (error || !listData || listData.length === 0) {
+        alert("Tidak ada data di Cloud untuk diunduh!");
+        return;
+      }
+
+      const workbook = new ExcelJS.Workbook();
+      const ws = workbook.addWorksheet('Rekap SPKS');
+
+      ws.columns = [
+        { header: 'No', key: 'no', width: 6 },
+        { header: 'No. SPKS', key: 'noSpks', width: 16 },
+        { header: 'PO / Buyer', key: 'poBuyer', width: 20 },
+        { header: 'Tanggal SPKS', key: 'tglSpks', width: 15 },
+        { header: 'Tanggal Selesai', key: 'tglSelesaiSpks', width: 15 },
+        { header: 'Pengrajin / SUB', key: 'pengrajin', width: 20 },
+        { header: 'Harga Sample', key: 'hargaSample', width: 18 },
+        { header: 'Harga Revisi', key: 'hargaProduksi', width: 18 },
+        { header: 'Nama Item', key: 'namaItem', width: 25 },
+        { header: 'Jumlah', key: 'jumlahItem', width: 10 },
+        { header: 'Ukuran', key: 'ukuran', width: 15 },
+        { header: 'Material 1', key: 'material1', width: 15 },
+        { header: 'Material 2', key: 'material2', width: 15 },
+        { header: 'Material 3', key: 'material3', width: 15 },
+        { header: 'Berat (KG)', key: 'berat', width: 12 },
+        { header: 'Keterangan', key: 'keterangan', width: 25 }
+      ];
+
+      ws.getRow(1).font = { bold: true, color: { argb: 'FFFFFF' } };
+      ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF16A34A' } };
+
+      listData.forEach((item, index) => {
+        ws.addRow({
+          no: index + 1,
+          noSpks: item.no_spks,
+          poBuyer: item.po_buyer,
+          tglSpks: item.tgl_spks,
+          tglSelesaiSpks: item.tgl_selesai_spks,
+          pengrajin: item.pengrajin,
+          hargaSample: item.harga_sample ? Number(item.harga_sample) : "",
+          hargaProduksi: item.harga_produksi ? Number(item.harga_produksi) : "",
+          namaItem: item.nama_item,
+          jumlahItem: item.jumlah_item ? Number(item.jumlah_item) : "",
+          ukuran: item.ukuran,
+          material1: item.material1,
+          material2: item.material2,
+          material3: item.material3,
+          berat: item.berat ? Number(item.berat) : "",
+          keterangan: item.keterangan
+        });
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      saveAs(new Blob([buffer]), `Rekap_Cloud_SPKS_${new Date().getTime()}.xlsx`);
+    }
+
+    function importExcelData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+          const jsonRows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+          if (jsonRows.length === 0) {
+            alert("File Excel kosong!");
+            return;
+          }
+
+          const getVal = (row, ...keys) => {
+            for (let k of keys) {
+              for (let key in row) {
+                if (key.trim().toLowerCase() === k.trim().toLowerCase()) return row[key];
+              }
+            }
+            return null;
+          };
+
+          const payloadBatch = jsonRows.map(row => ({
+            no_spks: String(getVal(row, "No. SPKS", "No SPKS", "noSpks") || ""),
+            po_buyer: String(getVal(row, "PO / Buyer", "PO/Buyer", "Buyer", "poBuyer") || ""),
+            tgl_spks: getVal(row, "Tanggal SPKS", "Tgl SPKS") || null,
+            tgl_selesai_spks: getVal(row, "Tanggal Selesai", "Tgl Selesai") || null,
+            pengrajin: String(getVal(row, "Pengrajin / SUB", "Pengrajin") || ""),
+            harga_sample: getVal(row, "Harga Sample") ? parseFloat(getVal(row, "Harga Sample")) : null,
+            harga_produksi: getVal(row, "Harga Revisi") ? parseFloat(getVal(row, "Harga Revisi")) : null,
+            nama_item: String(getVal(row, "Nama Item") || ""),
+            jumlah_item: getVal(row, "Jumlah") ? parseInt(getVal(row, "Jumlah")) : null,
+            ukuran: String(getVal(row, "Ukuran") || ""),
+            material1: String(getVal(row, "Material 1") || ""),
+            material2: String(getVal(row, "Material 2") || ""),
+            material3: String(getVal(row, "Material 3") || ""),
+            berat: getVal(row, "Berat (KG)", "Berat") ? parseFloat(getVal(row, "Berat (KG)", "Berat")) : null,
+            keterangan: String(getVal(row, "Keterangan") || "")
+          })).filter(item => item.no_spks || item.nama_item || item.po_buyer);
+
+          const { error } = await supabaseClient.from('spks').insert(payloadBatch);
+
+          if (error) {
+            alert("Gagal mengimpor data ke Cloud: " + error.message);
+          } else {
+            alert(`Berhasil mengimpor ${payloadBatch.length} data ke Cloud Database!`);
+            tampilkanData();
+          }
+        } catch (err) {
+          alert("Format file Excel tidak sesuai!");
+        } finally {
+          event.target.value = '';
+        }
+      };
+      reader.readAsArrayBuffer(file);
     }
 
     function resetForm() {
