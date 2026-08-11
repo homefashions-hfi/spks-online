@@ -68,6 +68,76 @@
     .login-error { color: #dc2626; font-size: 11.5px; margin-bottom: 12px; display: none; font-weight: 600; }
     .user-info-badge { font-size: 11px; font-weight: bold; color: #2563eb; margin-top: 2px; display: block; }
     .btn-logout { background-color: #dc2626; color: #fff; border: none; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 4px; }
+
+    /* ===== GAYA CETAK PERSIS INTERFACE (PRINT STYLES) ===== */
+    @media print {
+      /* Paksa perubah latar warna & grafik latar ikut terformat saat diprint */
+      * { 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important; 
+      }
+      
+      body { 
+        background: #ffffff !important; 
+        padding: 0 !important; 
+        margin: 0 !important; 
+      }
+      
+      .container { 
+        border: 2px solid #64748b !important; 
+        box-shadow: none !important; 
+        width: 100% !important; 
+        max-width: 100% !important; 
+        padding: 18px 22px !important; 
+        border-radius: 8px !important;
+      }
+      
+      /* Sembunyikan Elemen yang Tidak Diperlukan */
+      .history-section, 
+      .button-group, 
+      .btn-upload-label, 
+      #btnHapusGambar, 
+      .user-info-badge, 
+      .btn-logout, 
+      .login-overlay { 
+        display: none !important; 
+      }
+
+      /* Pertahankan Tampilan Input & Layout persis seperti UI */
+      .spks-no-box input {
+        border: 1.5px solid #475569 !important;
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+      }
+
+      .harga-table {
+        border: 1.5px solid #0284c7 !important;
+        background-color: #e0f2fe !important;
+      }
+
+      .harga-box input {
+        border: 1px solid #0284c7 !important;
+        background-color: #ffffff !important;
+      }
+
+      .label-col, .colon-col {
+        background-color: #f1f5f9 !important;
+      }
+
+      .image-upload-col {
+        background-color: #f8fafc !important;
+      }
+
+      .image-preview-box {
+        border: 1.5px dashed #64748b !important;
+      }
+
+      .note {
+        background-color: #fef2f2 !important;
+        border: 1px solid #fca5a5 !important;
+        color: #dc2626 !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -198,11 +268,11 @@
       console.error("Gagal inisialisasi Supabase:", e);
     }
 
-    // DAFTAR AKUN PENUTUPAN HAK AKSES ROLE
+    // DAFTAR AKUN HAK AKSES ROLE
     const USERS = [
       { username: "admin", password: "123", role: "admin" },
-      { username: "home fashions", password: "123", role: "user" },
-      { username: "tamu", password: "123", role: "user2" } // Akun contoh untuk role user2
+      { username: "RUDIYANTO", password: "123", role: "user" },
+      { username: "viewer", password: "123", role: "user2" }
     ];
 
     let editId = null;
@@ -249,16 +319,9 @@
       const isUser2 = (role === 'user2');
       const isAdmin = (role === 'admin');
 
-      // Role user2 hanya bisa melihat data
       document.getElementById('btnSimpan').disabled = isUser2;
-      
-      // Sembunyikan Import Excel untuk role user2 saja
       document.getElementById('btnImportExcelLabel').style.display = isUser2 ? 'none' : 'inline-block';
-      
-      // Tombol Hapus Semua hanya muncul untuk Admin (User dan User2 disembunyikan)
       document.getElementById('btnHapusSemua').style.display = isAdmin ? 'inline-block' : 'none';
-      
-      // Kolom Aksi di tabel disembunyikan jika role user2
       document.getElementById('thAksi').style.display = isUser2 ? 'none' : 'table-cell';
     }
 
@@ -370,7 +433,6 @@
         if (!keyword || itemString.includes(keyword)) {
           const fotoTag = item.gambar ? `<img src="${item.gambar}" style="width:32px; height:32px; object-fit:cover;">` : '-';
           
-          // Role user2 tidak dapat melihat tombol aksi Edit/Hapus
           let tdAksi = (currentRole !== 'user2') ? `<td>
             <button class="btn-action" style="background-color:#2563eb;" onclick="editData(${item.id})">Edit</button>
             <button class="btn-action" style="background-color:#dc2626;" onclick="hapusData(${item.id})">Hapus</button>
@@ -448,7 +510,6 @@
     }
 
     async function hapusSemuaData() {
-      // Hanya role Admin yang diperbolehkan
       if (sessionStorage.getItem('spks_logged_role') !== 'admin') {
         alert("Akses ditolak: Hanya Admin yang dapat menghapus seluruh data!");
         return;
@@ -602,7 +663,7 @@
           const { error } = await supabaseClient.from('spks').insert(payloadBatch);
 
           if (error) {
-            alert("Gagal mengimpor data ke Cloud: " + response.error.message);
+            alert("Gagal mengimpor data ke Cloud: " + error.message);
           } else {
             alert(`Berhasil mengimpor ${payloadBatch.length} data ke Cloud Database!`);
             tampilkanData();
