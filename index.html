@@ -59,6 +59,14 @@
     .history-table th, .history-table td { border: 1px solid #64748b; padding: 5px 8px; text-align: left; }
     .history-table th { background-color: #e2e8f0; color: #0f172a; font-weight: 800; white-space: nowrap; }
     .btn-action { cursor: pointer; color: #fff; border: none; padding: 3px 6px; border-radius: 3px; font-size: 10.5px; font-weight: 700; }
+    
+    /* ===== PAGINATION STYLES ===== */
+    .pagination-container { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 8px; border-top: 1px solid #cbd5e1; }
+    .pagination-info { font-size: 12px; font-weight: 700; color: #475569; }
+    .pagination-buttons { display: flex; gap: 6px; }
+    .btn-page { background-color: #475569; color: #ffffff; border: none; padding: 5px 12px; font-size: 11.5px; font-weight: 700; border-radius: 4px; cursor: pointer; }
+    .btn-page:disabled { background-color: #cbd5e1; cursor: not-allowed; }
+
     .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.95); display: flex; justify-content: center; align-items: center; z-index: 9999; }
     .login-card { background-color: #ffffff; padding: 30px 25px; border-radius: 8px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
     .login-card h2 { margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #0f172a; }
@@ -69,9 +77,30 @@
     .user-info-badge { font-size: 11px; font-weight: bold; color: #2563eb; margin-top: 2px; display: block; }
     .btn-logout { background-color: #dc2626; color: #fff; border: none; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 4px; }
 
+    /* ===== STYLE POP-UP ZOOM GAMBAR ===== */
+    #imgZoomPreview {
+      display: none;
+      position: fixed;
+      z-index: 99999;
+      pointer-events: none;
+      border: 2px solid #334155;
+      background-color: #ffffff;
+      padding: 5px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      max-width: 280px;
+      max-height: 280px;
+    }
+    #imgZoomTag {
+      max-width: 270px;
+      max-height: 270px;
+      object-fit: contain;
+      display: block;
+      border-radius: 4px;
+    }
+
     /* ===== GAYA CETAK PERSIS INTERFACE (PRINT STYLES) ===== */
     @media print {
-      /* Paksa perubah latar warna & grafik latar ikut terformat saat diprint */
       * { 
         -webkit-print-color-adjust: exact !important; 
         print-color-adjust: exact !important; 
@@ -92,18 +121,17 @@
         border-radius: 8px !important;
       }
       
-      /* Sembunyikan Elemen yang Tidak Diperlukan */
       .history-section, 
       .button-group, 
       .btn-upload-label, 
       #btnHapusGambar, 
       .user-info-badge, 
       .btn-logout, 
-      .login-overlay { 
+      .login-overlay,
+      #imgZoomPreview { 
         display: none !important; 
       }
 
-      /* Pertahankan Tampilan Input & Layout persis seperti UI */
       .spks-no-box input {
         border: 1.5px solid #475569 !important;
         background-color: #f8fafc !important;
@@ -141,6 +169,11 @@
   </style>
 </head>
 <body>
+
+  <!-- Element Pop-up Zoom Mengambang -->
+  <div id="imgZoomPreview">
+    <img id="imgZoomTag" src="" alt="Zoom Preview">
+  </div>
 
   <!-- Modal Login -->
   <div id="loginOverlay" class="login-overlay">
@@ -240,7 +273,7 @@
       </div>
     </div>
     <div class="search-box">
-      <input type="text" id="searchInput" onkeyup="tampilkanData()" placeholder="Cari No. SPKS, Buyer, Pengrajin, Nama Item...">
+      <input type="text" id="searchInput" onkeyup="resetPageAndRender()" placeholder="Cari No. SPKS, Buyer, Pengrajin, Nama Item...">
     </div>
     <div class="table-responsive">
       <table class="history-table">
@@ -251,6 +284,15 @@
         </thead>
         <tbody id="tabelSimpan"></tbody>
       </table>
+    </div>
+
+    <!-- Tombol & Info Paginasi -->
+    <div class="pagination-container">
+      <div class="pagination-info" id="paginationInfo">Menampilkan 0-0 dari 0 data</div>
+      <div class="pagination-buttons">
+        <button class="btn-page" id="btnPrev" onclick="prevPage()">Previous</button>
+        <button class="btn-page" id="btnNext" onclick="nextPage()">Next</button>
+      </div>
     </div>
   </div>
 
@@ -270,13 +312,49 @@
 
     // DAFTAR AKUN HAK AKSES ROLE
     const USERS = [
-      { username: "admin", password: "41122129", role: "admin" },
-      { username: "home-fashions", password: "hf123", role: "user" },
-      { username: "tamu", password: "123", role: "user2" }
+      { username: "admin", password: "123", role: "admin" },
+      { username: "RUDIYANTO", password: "123", role: "user" },
+      { username: "viewer", password: "123", role: "user2" }
     ];
 
     let editId = null;
     let base64Gambar = "";
+
+    // VARIABLE PAGINASI
+    let currentPage = 1;
+    const rowsPerPage = 10;
+
+    // ===== FUNGSI HOVER POPUP ZOOM =====
+    function showZoom(e, src) {
+      const zoomBox = document.getElementById('imgZoomPreview');
+      const zoomImg = document.getElementById('imgZoomTag');
+      if (!src) return;
+      zoomImg.src = src;
+      zoomBox.style.display = 'block';
+      moveZoom(e);
+    }
+
+    function moveZoom(e) {
+      const zoomBox = document.getElementById('imgZoomPreview');
+      const offset = 15;
+      let left = e.clientX + offset;
+      let top = e.clientY + offset;
+
+      if (left + 300 > window.innerWidth) {
+        left = e.clientX - 300;
+      }
+      if (top + 300 > window.innerHeight) {
+        top = e.clientY - 300;
+      }
+
+      zoomBox.style.left = left + 'px';
+      zoomBox.style.top = top + 'px';
+    }
+
+    function hideZoom() {
+      const zoomBox = document.getElementById('imgZoomPreview');
+      zoomBox.style.display = 'none';
+    }
 
     function cekStatusLogin() {
       const loggedRole = sessionStorage.getItem('spks_logged_role');
@@ -405,6 +483,11 @@
       }
     }
 
+    function resetPageAndRender() {
+      currentPage = 1;
+      tampilkanData();
+    }
+
     async function tampilkanData() {
       const tbody = document.getElementById('tabelSimpan');
       const currentRole = sessionStorage.getItem('spks_logged_role');
@@ -425,41 +508,83 @@
       tbody.innerHTML = '';
       if (!listData || listData.length === 0) {
         tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:#64748b;">Belum ada data tersimpan di Cloud Database</td></tr>`;
+        document.getElementById('paginationInfo').innerText = 'Menampilkan 0 dari 0 data';
+        document.getElementById('btnPrev').disabled = true;
+        document.getElementById('btnNext').disabled = true;
         return;
       }
 
-      listData.forEach((item, index) => {
+      // Filter Data Berdasarkan Kata Kunci Pencarian
+      const filteredData = listData.filter(item => {
         const itemString = `${item.no_spks} ${item.po_buyer} ${item.nama_item} ${item.pengrajin}`.toLowerCase();
-        if (!keyword || itemString.includes(keyword)) {
-          const fotoTag = item.gambar ? `<img src="${item.gambar}" style="width:32px; height:32px; object-fit:cover;">` : '-';
-          
-          let tdAksi = (currentRole !== 'user2') ? `<td>
-            <button class="btn-action" style="background-color:#2563eb;" onclick="editData(${item.id})">Edit</button>
-            <button class="btn-action" style="background-color:#dc2626;" onclick="hapusData(${item.id})">Hapus</button>
-          </td>` : '';
-
-          tbody.innerHTML += `<tr>
-            <td>${index + 1}</td>
-            <td>${fotoTag}</td>
-            <td><b>${item.no_spks || '-'}</b></td>
-            <td>${item.po_buyer || '-'}</td>
-            <td>${item.tgl_spks || '-'}</td>
-            <td>${item.tgl_selesai_spks || '-'}</td>
-            <td>${item.pengrajin || '-'}</td>
-            <td>${item.harga_sample ? 'Rp ' + Number(item.harga_sample).toLocaleString('id-ID') : '-'}</td>
-            <td>${item.harga_produksi ? 'Rp ' + Number(item.harga_produksi).toLocaleString('id-ID') : '-'}</td>
-            <td>${item.nama_item || '-'}</td>
-            <td>${item.jumlah_item || '-'}</td>
-            <td>${item.ukuran || '-'}</td>
-            <td>${item.material1 || '-'}</td>
-            <td>${item.material2 || '-'}</td>
-            <td>${item.material3 || '-'}</td>
-            <td>${item.berat ? item.berat + ' KG' : '-'}</td>
-            <td>${item.keterangan || '-'}</td>
-            ${tdAksi}
-          </tr>`;
-        }
+        return !keyword || itemString.includes(keyword);
       });
+
+      if (filteredData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:#64748b;">Data tidak ditemukan</td></tr>`;
+        document.getElementById('paginationInfo').innerText = 'Menampilkan 0 dari 0 data';
+        document.getElementById('btnPrev').disabled = true;
+        document.getElementById('btnNext').disabled = true;
+        return;
+      }
+
+      // Hitung Batas Paginasi (10 Baris per Halaman)
+      const totalItems = filteredData.length;
+      const totalPages = Math.ceil(totalItems / rowsPerPage);
+
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      const startIndex = (currentPage - 1) * rowsPerPage;
+      const endIndex = Math.min(startIndex + rowsPerPage, totalItems);
+      const pageData = filteredData.slice(startIndex, endIndex);
+
+      pageData.forEach((item, index) => {
+        const fotoTag = item.gambar 
+          ? `<img src="${item.gambar}" style="width:32px; height:32px; object-fit:cover; cursor:pointer; border-radius:3px;" onmouseover="showZoom(event, this.src)" onmousemove="moveZoom(event)" onmouseout="hideZoom()">` 
+          : '-';
+        
+        let tdAksi = (currentRole !== 'user2') ? `<td>
+          <button class="btn-action" style="background-color:#2563eb;" onclick="editData(${item.id})">Edit</button>
+          <button class="btn-action" style="background-color:#dc2626;" onclick="hapusData(${item.id})">Hapus</button>
+        </td>` : '';
+
+        tbody.innerHTML += `<tr>
+          <td>${startIndex + index + 1}</td>
+          <td>${fotoTag}</td>
+          <td><b>${item.no_spks || '-'}</b></td>
+          <td>${item.po_buyer || '-'}</td>
+          <td>${item.tgl_spks || '-'}</td>
+          <td>${item.tgl_selesai_spks || '-'}</td>
+          <td>${item.pengrajin || '-'}</td>
+          <td>${item.harga_sample ? 'Rp ' + Number(item.harga_sample).toLocaleString('id-ID') : '-'}</td>
+          <td>${item.harga_produksi ? 'Rp ' + Number(item.harga_produksi).toLocaleString('id-ID') : '-'}</td>
+          <td>${item.nama_item || '-'}</td>
+          <td>${item.jumlah_item || '-'}</td>
+          <td>${item.ukuran || '-'}</td>
+          <td>${item.material1 || '-'}</td>
+          <td>${item.material2 || '-'}</td>
+          <td>${item.material3 || '-'}</td>
+          <td>${item.berat ? item.berat + ' KG' : '-'}</td>
+          <td>${item.keterangan || '-'}</td>
+          ${tdAksi}
+        </tr>`;
+      });
+
+      // Update Tampilan Status & Tombol Paginasi
+      document.getElementById('paginationInfo').innerText = `Menampilkan ${startIndex + 1}-${endIndex} dari ${totalItems} data (Halaman ${currentPage} / ${totalPages})`;
+      document.getElementById('btnPrev').disabled = (currentPage === 1);
+      document.getElementById('btnNext').disabled = (currentPage === totalPages);
+    }
+
+    function nextPage() {
+      currentPage++;
+      tampilkanData();
+    }
+
+    function prevPage() {
+      currentPage--;
+      tampilkanData();
     }
 
     async function editData(id) {
