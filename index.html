@@ -14,31 +14,68 @@
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
     body { background-color: #e2e8f0; color: #064e3b; display: flex; flex-direction: column; align-items: center; padding: 15px 10px; margin: 0; min-height: 100vh; }
-    .container { width: 100%; max-width: 1100px; background-color: #ffffff; border: 2px solid #64748b; border-radius: 8px; padding: 18px 22px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+    
+    /* Container Utama dengan Watermark Miring */
+    .container { 
+      width: 100%; 
+      max-width: 1100px; 
+      background-color: #ffffff; 
+      border: 2px solid #64748b; 
+      border-radius: 8px; 
+      padding: 18px 22px; 
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
+      position: relative; /* Penting untuk posisi watermark */
+      overflow: hidden;    /* Mencegah watermark melimpah keluar container */
+    }
+
+    /* Efek Watermark Logo Miring di Latar Belakang Tampilan Utama */
+    .container::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 65%;
+      height: 65%;
+      background-image: url('HFI logo.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      opacity: 0.08; /* Transparansi agar teks tetap mudah dibaca */
+      transform: translate(-50%, -50%) rotate(-30deg); /* Mengetengahkan dan memiringkan logo -30 derajat */
+      pointer-events: none; /* Supaya input di atasnya tetap bisa diklik */
+      z-index: 0;
+    }
+
+    /* Memastikan elemen dalam container tampil di atas watermark */
+    .container > * {
+      position: relative;
+      z-index: 1;
+    }
+
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #334155; gap: 10px; flex-wrap: wrap; }
     .logo-left-img { max-height: 58px; width: auto; object-fit: contain; display: block; }
     .header-title { font-size: 26px; font-weight: 800; text-align: center; color: #3498db; letter-spacing: 0.5px; flex: 1; }
     .spks-no-box { text-align: right; }
     .spks-no-box .label { font-size: 11px; font-weight: 800; margin-bottom: 2px; color: #064e3b; text-transform: uppercase; }
-    .spks-no-box input { font-size: 14px; font-weight: 800; text-align: center; width: 130px; border: 1.5px solid #475569; border-radius: 4px; padding: 3px 6px; background-color: #f8fafc; color: #064e3b; outline: none; }
+    .spks-no-box input { font-size: 14px; font-weight: 800; text-align: center; width: 130px; border: 1.5px solid #475569; border-radius: 4px; padding: 3px 6px; background-color: rgba(248, 250, 252, 0.85); color: #064e3b; outline: none; }
     .form-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; border: 1.5px solid #475569; }
     .form-table td { border: 1px solid #64748b; padding: 4px 8px; vertical-align: middle; font-size: 12.5px; }
-    .label-col { width: 15%; font-weight: 700; color: #064e3b; background-color: #f1f5f9; white-space: nowrap; }
-    .colon-col { width: 12px; text-align: center; font-weight: 700; color: #064e3b; background-color: #f1f5f9; }
-    .input-col input { width: 100%; border: none; outline: none; font-size: 12.5px; background: #ffffff; color: #064e3b; font-weight: 600; padding: 2px 4px; }
-    .harga-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; border: 1.5px solid #0284c7; background-color: #e0f2fe; }
+    .label-col { width: 15%; font-weight: 700; color: #064e3b; background-color: rgba(241, 245, 249, 0.85); white-space: nowrap; }
+    .colon-col { width: 12px; text-align: center; font-weight: 700; color: #064e3b; background-color: rgba(241, 245, 249, 0.85); }
+    .input-col input { width: 100%; border: none; outline: none; font-size: 12.5px; background: rgba(255, 255, 255, 0.85); color: #064e3b; font-weight: 600; padding: 2px 4px; }
+    .harga-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; border: 1.5px solid #0284c7; background-color: rgba(224, 242, 254, 0.85); }
     .harga-table td { border: 1px solid #0284c7; padding: 5px 10px; font-size: 12.5px; vertical-align: middle; }
     .harga-box { display: flex; align-items: center; gap: 6px; }
     .harga-box label { font-weight: 800; white-space: nowrap; color: #0369a1; font-size: 12.5px; }
-    .harga-box input { width: 100%; border: 1px solid #0284c7; border-radius: 4px; padding: 3px 6px; outline: none; font-size: 12.5px; font-weight: 700; background-color: #ffffff; color: #064e3b; }
+    .harga-box input { width: 100%; border: 1px solid #0284c7; border-radius: 4px; padding: 3px 6px; outline: none; font-size: 12.5px; font-weight: 700; background-color: rgba(255, 255, 255, 0.9); color: #064e3b; }
     .section2-container { display: flex; border: 1.5px solid #475569; margin-bottom: 8px; flex-wrap: wrap; }
     .section2-container .form-table { border: none; margin-bottom: 0; flex: 1 1 450px; }
-    .image-upload-col { width: 210px; border-left: 1.5px solid #475569; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #f8fafc; flex-grow: 0; flex-shrink: 0; }
+    .image-upload-col { width: 210px; border-left: 1.5px solid #475569; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: rgba(248, 250, 252, 0.85); flex-grow: 0; flex-shrink: 0; }
     .image-preview-box { width: 100%; height: 140px; border: 1.5px dashed #64748b; border-radius: 4px; display: flex; align-items: center; justify-content: center; background-color: #ffffff; overflow: hidden; margin-bottom: 6px; position: relative; }
     .image-preview-box img { width: 100%; height: 100%; object-fit: contain; }
     .image-placeholder-text { color: #64748b; font-size: 11px; font-weight: 600; text-align: center; padding: 4px; }
     .btn-upload-label { background-color: #2563eb; color: #ffffff; padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; display: inline-block; text-align: center; }
-    .note { color: #dc2626; font-size: 11px; font-weight: 900; margin-top: 6px; line-height: 1.4; text-align: left; background-color: #fef2f2; padding: 6px 10px; border-radius: 4px; border: 1px solid #fca5a5; }
+    .note { color: #dc2626; font-size: 11px; font-weight: 900; margin-top: 6px; line-height: 1.4; text-align: left; background-color: rgba(254, 242, 242, 0.9); padding: 6px 10px; border-radius: 4px; border: 1px solid #fca5a5; }
     .footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px; gap: 15px; flex-wrap: wrap; }
     .signature-box { text-align: center; width: 180px; }
     .signature-line { border-bottom: 2px solid #334155; margin-bottom: 6px; }
@@ -120,6 +157,10 @@
         max-width: 100% !important; 
         padding: 18px 22px !important; 
         border-radius: 8px !important;
+      }
+
+      .container::before {
+        opacity: 0.08 !important; /* Memastikan Watermark Tetap Tercetak Presisi */
       }
 
       .header-title {
