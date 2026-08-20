@@ -240,7 +240,7 @@
         </td>
         <td style="width: 50%;">
           <div class="harga-box">
-            <label>Harga Revisi Rp :</label>
+            <label>Harga Produksi Rp :</label>
             <input type="text" id="hargaProduksi" placeholder="0" oninput="formatInputRupiah(this)">
           </div>
         </td>
@@ -270,7 +270,7 @@
       </div>
     </div>
 
-    <div class="note">*Ajuan harga revisi terjadi apabila sampel yang sudah dibuat ada permintaan perbaikan (Perbaikan dari pabrik)</div>
+    <div class="note">*Ajuan Harga Produksi terjadi apabila sampel yang sudah dibuat ada permintaan perbaikan (Perbaikan dari pabrik)</div>
 
     <div class="footer">
       <div class="signature-box"><div class="signature-line"></div><div class="signature-text">Pembuat SPKS</div></div>
@@ -302,7 +302,7 @@
       <table class="history-table">
         <thead>
           <tr id="headerRow">
-            <th>No</th><th>Foto</th><th>No. SPKS</th><th>PO / Buyer</th><th>Tgl SPKS</th><th>Tgl Selesai</th><th>Pengrajin</th><th>Harga Sample</th><th>Harga Revisi</th><th>Nama Item</th><th>Jumlah</th><th>Ukuran</th><th>Material 1</th><th>Material 2</th><th>Material 3</th><th>Berat (KG)</th><th>Keterangan</th><th id="thAksi">Aksi</th>
+            <th>No</th><th>Foto</th><th>No. SPKS</th><th>PO / Buyer</th><th>Tgl SPKS</th><th>Tgl Selesai</th><th>Pengrajin</th><th>Harga Sample</th><th>Harga Produksi</th><th>Nama Item</th><th>Jumlah</th><th>Ukuran</th><th>Material 1</th><th>Material 2</th><th>Material 3</th><th>Berat (KG)</th><th>Keterangan</th><th id="thAksi">Aksi</th>
           </tr>
         </thead>
         <tbody id="tabelSimpan"></tbody>
@@ -710,7 +710,7 @@
         { header: 'Pengrajin', key: 'pengrajin', width: 20 },
         { header: 'Nama Item', key: 'namaItem', width: 25 },
         { header: 'Harga Sample', key: 'hargaSample', width: 18 },
-        { header: 'Harga Revisi', key: 'hargaProduksi', width: 18 }
+        { header: 'Harga Produksi', key: 'hargaProduksi', width: 18 }
       ];
 
       ws.addRow({
@@ -747,7 +747,7 @@
         { header: 'Tanggal Selesai', key: 'tglSelesaiSpks', width: 15 },
         { header: 'Pengrajin / SUB', key: 'pengrajin', width: 20 },
         { header: 'Harga Sample', key: 'hargaSample', width: 18 },
-        { header: 'Harga Revisi', key: 'hargaProduksi', width: 18 },
+        { header: 'Harga Produksi', key: 'hargaProduksi', width: 18 },
         { header: 'Nama Item', key: 'namaItem', width: 25 },
         { header: 'Jumlah', key: 'jumlahItem', width: 10 },
         { header: 'Ukuran', key: 'ukuran', width: 15 },
@@ -821,7 +821,7 @@
             tgl_selesai_spks: getVal(row, "Tanggal Selesai", "Tgl Selesai") || null,
             pengrajin: String(getVal(row, "Pengrajin / SUB", "Pengrajin") || ""),
             harga_sample: cleanRupiah(getVal(row, "Harga Sample")),
-            harga_produksi: cleanRupiah(getVal(row, "Harga Revisi")),
+            harga_produksi: cleanRupiah(getVal(row, "Harga Produksi")),
             nama_item: String(getVal(row, "Nama Item") || ""),
             jumlah_item: getVal(row, "Jumlah") ? parseInt(getVal(row, "Jumlah")) : null,
             ukuran: String(getVal(row, "Ukuran") || ""),
