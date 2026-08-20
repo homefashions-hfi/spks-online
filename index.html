@@ -232,8 +232,18 @@
 
     <table class="harga-table">
       <tr>
-        <td style="width: 50%;"><div class="harga-box"><label>Harga Sample :</label><input type="text" id="hargaSample" placeholder="Rp 0" oninput="formatInputRupiah(this)"></div></td>
-        <td style="width: 50%;"><div class="harga-box"><label>Harga Revisi :</label><input type="text" id="hargaProduksi" placeholder="Rp 0" oninput="formatInputRupiah(this)"></div></td>
+        <td style="width: 50%;">
+          <div class="harga-box">
+            <label>Harga Sample Rp :</label>
+            <input type="text" id="hargaSample" placeholder="0" oninput="formatInputRupiah(this)">
+          </div>
+        </td>
+        <td style="width: 50%;">
+          <div class="harga-box">
+            <label>Harga Revisi Rp :</label>
+            <input type="text" id="hargaProduksi" placeholder="0" oninput="formatInputRupiah(this)">
+          </div>
+        </td>
       </tr>
     </table>
 
@@ -337,32 +347,28 @@
     let currentPage = 1;
     const rowsPerPage = 10;
 
-    // ===== HELPER FORMATTING RUPIAH =====
-    function formatRupiah(angka) {
-      if (!angka && angka !== 0) return "";
-      let numberString = angka.toString().replace(/[^,\d]/g, '');
-      let split = numberString.split(',');
-      let sisa = split[0].length % 3;
-      let rupiah = split[0].substr(0, sisa);
-      let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+    // ===== HELPER FORMATTING OTOMATIS BER-TITIK (RIBUAN / JUTAAN) =====
+    function formatRupiahFormat(angka) {
+      if (!angka && angka !== 0) return '';
+      let numberString = angka.toString().replace(/[^0-9]/g, '');
+      return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
 
-      if (ribuan) {
-        let separator = sisa ? '.' : '';
-        rupiah += separator + ribuan.join('.');
-      }
-
-      rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
-      return rupiah ? 'Rp ' + rupiah : '';
+    function formatInputRupiah(input) {
+      let cursorPosition = input.selectionStart;
+      let originalLength = input.value.length;
+      
+      input.value = formatRupiahFormat(input.value);
+      
+      let newLength = input.value.length;
+      cursorPosition += (newLength - originalLength);
+      input.setSelectionRange(cursorPosition, cursorPosition);
     }
 
     function cleanRupiah(rupiahString) {
       if (!rupiahString) return null;
       let cleaned = rupiahString.toString().replace(/[^0-9]/g, '');
       return cleaned ? parseFloat(cleaned) : null;
-    }
-
-    function formatInputRupiah(input) {
-      input.value = formatRupiah(input.value);
     }
 
     // ===== FUNGSI HOVER POPUP ZOOM =====
@@ -598,8 +604,8 @@
           <td>${item.tgl_spks || '-'}</td>
           <td>${item.tgl_selesai_spks || '-'}</td>
           <td>${item.pengrajin || '-'}</td>
-          <td>${item.harga_sample ? formatRupiah(item.harga_sample) : '-'}</td>
-          <td>${item.harga_produksi ? formatRupiah(item.harga_produksi) : '-'}</td>
+          <td>${item.harga_sample ? 'Rp ' + formatRupiahFormat(item.harga_sample) : '-'}</td>
+          <td>${item.harga_produksi ? 'Rp ' + formatRupiahFormat(item.harga_produksi) : '-'}</td>
           <td>${item.nama_item || '-'}</td>
           <td>${item.jumlah_item || '-'}</td>
           <td>${item.ukuran || '-'}</td>
@@ -640,8 +646,8 @@
       document.getElementById('tglSpks').value = data.tgl_spks || '';
       document.getElementById('tglSelesaiSpks').value = data.tgl_selesai_spks || '';
       document.getElementById('pengrajin').value = data.pengrajin || '';
-      document.getElementById('hargaSample').value = data.harga_sample ? formatRupiah(data.harga_sample) : '';
-      document.getElementById('hargaProduksi').value = data.harga_produksi ? formatRupiah(data.harga_produksi) : '';
+      document.getElementById('hargaSample').value = data.harga_sample ? formatRupiahFormat(data.harga_sample) : '';
+      document.getElementById('hargaProduksi').value = data.harga_produksi ? formatRupiahFormat(data.harga_produksi) : '';
       document.getElementById('namaItem').value = data.nama_item || '';
       document.getElementById('jumlahItem').value = data.jumlah_item || '';
       document.getElementById('ukuran').value = data.ukuran || '';
