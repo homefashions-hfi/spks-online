@@ -13,113 +13,66 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: #e2e8f0; color: #007BFF; display: flex; flex-direction: column; align-items: center; padding: 15px 10px; margin: 0; min-height: 100vh; }
-    
-    /* Container Utama dengan Watermark Miring */
-    .container { 
-      width: 100%; 
-      max-width: 1100px; 
-      background-color: #ffffff; 
-      border: 2px solid #64748b; 
-      border-radius: 8px; 
-      padding: 18px 22px; 
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
-      position: relative; /* Penting untuk posisi watermark */
-      overflow: hidden;    /* Mencegah watermark melimpah keluar container */
-      color: #007BFF;
-    }
-
-    /* Efek Watermark Logo Miring di Latar Belakang Tampilan Utama */
-    .container::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 65%;
-      height: 65%;
-      background-image: url('HFI logo.png');
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: contain;
-      opacity: 0.08; /* Transparansi agar teks tetap mudah dibaca */
-      transform: translate(-50%, -50%) rotate(-30deg); /* Mengetengahkan dan memiringkan logo -30 derajat */
-      pointer-events: none; /* Supaya input di atasnya tetap bisa diklik */
-      z-index: 0;
-    }
-
-    /* Memastikan elemen dalam container tampil di atas watermark */
-    .container > * {
-      position: relative;
-      z-index: 1;
-    }
-
+    body { background-color: #e2e8f0; color: #0f172a; display: flex; flex-direction: column; align-items: center; padding: 15px 10px; margin: 0; min-height: 100vh; }
+    .container { width: 100%; max-width: 1100px; background-color: #ffffff; border: 2px solid #64748b; border-radius: 8px; padding: 18px 22px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #334155; gap: 10px; flex-wrap: wrap; }
     .logo-left-img { max-height: 58px; width: auto; object-fit: contain; display: block; }
-    .header-title { font-size: 26px; font-weight: 800; text-align: center; color: #007BFF; letter-spacing: 0.5px; flex: 1; }
+    .header-title { font-size: 26px; font-weight: 800; text-align: center; color: #0f172a; letter-spacing: 0.5px; flex: 1; }
     .spks-no-box { text-align: right; }
-    .spks-no-box .label { font-size: 11px; font-weight: 800; margin-bottom: 2px; color: #007BFF; text-transform: uppercase; }
-    
-    /* Input teks diisi warna hitam */
-    .spks-no-box input { font-size: 14px; font-weight: 800; text-align: center; width: 130px; border: 1.5px solid #475569; border-radius: 4px; padding: 3px 6px; background-color: rgba(248, 250, 252, 0.85); color: #000000; outline: none; }
-    
+    .spks-no-box .label { font-size: 11px; font-weight: 800; margin-bottom: 2px; color: #334155; text-transform: uppercase; }
+    .spks-no-box input { font-size: 14px; font-weight: 800; text-align: center; width: 130px; border: 1.5px solid #475569; border-radius: 4px; padding: 3px 6px; background-color: #f8fafc; color: #0f172a; outline: none; }
     .form-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; border: 1.5px solid #475569; }
     .form-table td { border: 1px solid #64748b; padding: 4px 8px; vertical-align: middle; font-size: 12.5px; }
-    .label-col { width: 15%; font-weight: 700; color: #007BFF; background-color: rgba(241, 245, 249, 0.85); white-space: nowrap; }
-    .colon-col { width: 12px; text-align: center; font-weight: 700; color: #007BFF; background-color: rgba(241, 245, 249, 0.85); }
-    
-    /* Input teks diisi warna hitam */
-    .input-col input { width: 100%; border: none; outline: none; font-size: 12.5px; background: rgba(255, 255, 255, 0.85); color: #000000; font-weight: 600; padding: 2px 4px; }
-    
-    .harga-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; border: 1.5px solid #0284c7; background-color: rgba(224, 242, 254, 0.85); }
+    .label-col { width: 15%; font-weight: 700; color: #0f172a; background-color: #f1f5f9; white-space: nowrap; }
+    .colon-col { width: 12px; text-align: center; font-weight: 700; color: #334155; background-color: #f1f5f9; }
+    .input-col input { width: 100%; border: none; outline: none; font-size: 12.5px; background: #ffffff; color: #0f172a; font-weight: 600; padding: 2px 4px; }
+    .harga-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; border: 1.5px solid #0284c7; background-color: #e0f2fe; }
     .harga-table td { border: 1px solid #0284c7; padding: 5px 10px; font-size: 12.5px; vertical-align: middle; }
     .harga-box { display: flex; align-items: center; gap: 6px; }
-    .harga-box label { font-weight: 800; white-space: nowrap; color: #007BFF; font-size: 12.5px; }
-    
-    /* Input teks diisi warna hitam */
-    .harga-box input { width: 100%; border: 1px solid #0284c7; border-radius: 4px; padding: 3px 6px; outline: none; font-size: 12.5px; font-weight: 700; background-color: rgba(255, 255, 255, 0.9); color: #000000; }
-    
+    .harga-box label { font-weight: 800; white-space: nowrap; color: #0369a1; font-size: 12.5px; }
+    .harga-box input { width: 100%; border: 1px solid #0284c7; border-radius: 4px; padding: 3px 6px; outline: none; font-size: 12.5px; font-weight: 700; background-color: #ffffff; color: #0f172a; }
     .section2-container { display: flex; border: 1.5px solid #475569; margin-bottom: 8px; flex-wrap: wrap; }
     .section2-container .form-table { border: none; margin-bottom: 0; flex: 1 1 450px; }
-    .image-upload-col { width: 210px; border-left: 1.5px solid #475569; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: rgba(248, 250, 252, 0.85); flex-grow: 0; flex-shrink: 0; }
+    .image-upload-col { width: 210px; border-left: 1.5px solid #475569; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #f8fafc; flex-grow: 0; flex-shrink: 0; }
     .image-preview-box { width: 100%; height: 140px; border: 1.5px dashed #64748b; border-radius: 4px; display: flex; align-items: center; justify-content: center; background-color: #ffffff; overflow: hidden; margin-bottom: 6px; position: relative; }
     .image-preview-box img { width: 100%; height: 100%; object-fit: contain; }
-    .image-placeholder-text { color: #007BFF; font-size: 11px; font-weight: 600; text-align: center; padding: 4px; }
+    .image-placeholder-text { color: #64748b; font-size: 11px; font-weight: 600; text-align: center; padding: 4px; }
     .btn-upload-label { background-color: #2563eb; color: #ffffff; padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; display: inline-block; text-align: center; }
-    .note { color: #007BFF; font-size: 11px; font-weight: 900; margin-top: 6px; line-height: 1.4; text-align: left; background-color: rgba(254, 242, 242, 0.9); padding: 6px 10px; border-radius: 4px; border: 1px solid #fca5a5; }
+    .note { color: #dc2626; font-size: 11px; font-weight: 900; margin-top: 6px; line-height: 1.4; text-align: left; background-color: #fef2f2; padding: 6px 10px; border-radius: 4px; border: 1px solid #fca5a5; }
     .footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px; gap: 15px; flex-wrap: wrap; }
     .signature-box { text-align: center; width: 180px; }
     .signature-line { border-bottom: 2px solid #334155; margin-bottom: 6px; }
-    .signature-text { font-size: 11.5px; font-weight: 800; color: #007BFF; }
+    .signature-text { font-size: 11.5px; font-weight: 800; color: #1e293b; }
     .button-group { display: flex; gap: 8px; margin-bottom: 2px; flex-wrap: wrap; justify-content: center; }
     .btn { background-color: #2563eb; color: #ffffff; border: none; border-radius: 4px; padding: 7px 15px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .btn:disabled { background-color: #94a3b8 !important; cursor: not-allowed; }
     .btn-excel { background-color: #16a34a; }
     .btn-import { background-color: #0284c7; }
     .btn-cancel { background-color: #475569 !important; }
-    .history-section { width: 100%; max-width: 1100px; margin-top: 15px; background: #ffffff; padding: 16px; border-radius: 8px; border: 2px solid #64748b; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); color: #064e3b; }
+    .history-section { width: 100%; max-width: 1100px; margin-top: 15px; background: #ffffff; padding: 16px; border-radius: 8px; border: 2px solid #64748b; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
     .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
-    .history-header h3 { margin: 0; font-size: 14.5px; font-weight: 800; color: #064e3b; }
+    .history-header h3 { margin: 0; font-size: 14.5px; font-weight: 800; color: #0f172a; }
     .search-box { margin-bottom: 12px; display: flex; gap: 8px; }
-    .search-box input { width: 100%; padding: 7px 12px; font-size: 12.5px; border: 1.5px solid #64748b; border-radius: 4px; outline: none; color: #064e3b; }
+    .search-box input { width: 100%; padding: 7px 12px; font-size: 12.5px; border: 1.5px solid #64748b; border-radius: 4px; outline: none; }
     .table-responsive { overflow-x: auto; }
     .history-table { width: 100%; border-collapse: collapse; font-size: 11.5px; min-width: 950px; }
     .history-table th, .history-table td { border: 1px solid #64748b; padding: 5px 8px; text-align: left; }
-    .history-table th { background-color: #e2e8f0; color: #064e3b; font-weight: 800; white-space: nowrap; }
+    .history-table th { background-color: #e2e8f0; color: #0f172a; font-weight: 800; white-space: nowrap; }
     .btn-action { cursor: pointer; color: #fff; border: none; padding: 3px 6px; border-radius: 3px; font-size: 10.5px; font-weight: 700; }
     
     /* ===== PAGINATION STYLES ===== */
     .pagination-container { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 8px; border-top: 1px solid #cbd5e1; }
-    .pagination-info { font-size: 12px; font-weight: 700; color: #064e3b; }
+    .pagination-info { font-size: 12px; font-weight: 700; color: #475569; }
     .pagination-buttons { display: flex; gap: 6px; }
     .btn-page { background-color: #475569; color: #ffffff; border: none; padding: 5px 12px; font-size: 11.5px; font-weight: 700; border-radius: 4px; cursor: pointer; }
     .btn-page:disabled { background-color: #cbd5e1; cursor: not-allowed; }
 
     .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.95); display: flex; justify-content: center; align-items: center; z-index: 9999; }
     .login-card { background-color: #ffffff; padding: 30px 25px; border-radius: 8px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
-    .login-card h2 { margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #064e3b; }
+    .login-card h2 { margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #0f172a; }
     .login-field { margin-bottom: 15px; text-align: left; }
-    .login-field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; color: #064e3b; }
-    .login-field input { width: 100%; padding: 8px 10px; font-size: 13px; border: 1.5px solid #64748b; border-radius: 4px; outline: none; color: #064e3b; }
+    .login-field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; color: #334155; }
+    .login-field input { width: 100%; padding: 8px 10px; font-size: 13px; border: 1.5px solid #64748b; border-radius: 4px; outline: none; }
     .login-error { color: #dc2626; font-size: 11.5px; margin-bottom: 12px; display: none; font-weight: 600; }
     .user-info-badge { font-size: 11px; font-weight: bold; color: #2563eb; margin-top: 2px; display: block; }
     .btn-logout { background-color: #dc2626; color: #fff; border: none; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 4px; }
@@ -157,7 +110,6 @@
         background: #ffffff !important; 
         padding: 0 !important; 
         margin: 0 !important; 
-        color: #007BFF !important;
       }
       
       .container { 
@@ -167,15 +119,6 @@
         max-width: 100% !important; 
         padding: 18px 22px !important; 
         border-radius: 8px !important;
-        color: #007BFF !important;
-      }
-
-      .container::before {
-        opacity: 0.08 !important; /* Memastikan Watermark Tetap Tercetak Presisi */
-      }
-
-      .header-title {
-        color: #007BFF !important;
       }
       
       .history-section, 
@@ -192,11 +135,7 @@
       .spks-no-box input {
         border: 1.5px solid #475569 !important;
         background-color: #f8fafc !important;
-        color: #000000 !important;
-      }
-
-      .input-col input {
-        color: #000000 !important;
+        color: #0f172a !important;
       }
 
       .harga-table {
@@ -207,12 +146,10 @@
       .harga-box input {
         border: 1px solid #0284c7 !important;
         background-color: #ffffff !important;
-        color: #000000 !important;
       }
 
       .label-col, .colon-col {
         background-color: #f1f5f9 !important;
-        color: #007BFF !important;
       }
 
       .image-upload-col {
@@ -226,7 +163,7 @@
       .note {
         background-color: #fef2f2 !important;
         border: 1px solid #fca5a5 !important;
-        color: #007BFF !important;
+        color: #dc2626 !important;
       }
     }
   </style>
