@@ -16,7 +16,7 @@
     body { background-color: #e2e8f0; color: #0f172a; display: flex; flex-direction: column; align-items: center; padding: 15px 10px; margin: 0; min-height: 100vh; }
     .container { width: 100%; max-width: 1100px; background-color: #ffffff; border: 2px solid #64748b; border-radius: 8px; padding: 18px 22px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
     
-    /* Warna teks biru #007BFF khusus pada elemen input form tampilan utama */
+    /* Warna teks biru #007BFF disamakan untuk seluruh input tampilan utama */
     .container input[type="text"],
     .container input[type="number"],
     .container input[type="date"] {
@@ -28,17 +28,17 @@
     .header-title { font-size: 26px; font-weight: 800; text-align: center; color: #0f172a; letter-spacing: 0.5px; flex: 1; }
     .spks-no-box { text-align: right; }
     .spks-no-box .label { font-size: 11px; font-weight: 800; margin-bottom: 2px; color: #334155; text-transform: uppercase; }
-    .spks-no-box input { font-size: 14px; font-weight: 800; text-align: center; width: 130px; border: 1.5px solid #475569; border-radius: 4px; padding: 3px 6px; background-color: #f8fafc; color: #007BFF; outline: none; }
+    .spks-no-box input { font-size: 14px; font-weight: 800; text-align: center; width: 130px; border: 1.5px solid #475569; border-radius: 4px; padding: 3px 6px; background-color: #f8fafc; color: #007BFF !important; outline: none; }
     .form-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; border: 1.5px solid #475569; }
     .form-table td { border: 1px solid #64748b; padding: 4px 8px; vertical-align: middle; font-size: 12.5px; }
     .label-col { width: 15%; font-weight: 700; color: #0f172a; background-color: #f1f5f9; white-space: nowrap; }
     .colon-col { width: 12px; text-align: center; font-weight: 700; color: #334155; background-color: #f1f5f9; }
-    .input-col input { width: 100%; border: none; outline: none; font-size: 12.5px; background: #ffffff; color: #007BFF; font-weight: 600; padding: 2px 4px; }
+    .input-col input { width: 100%; border: none; outline: none; font-size: 12.5px; background: #ffffff; color: #007BFF !important; font-weight: 600; padding: 2px 4px; }
     .harga-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; border: 1.5px solid #0284c7; background-color: #e0f2fe; }
     .harga-table td { border: 1px solid #0284c7; padding: 5px 10px; font-size: 12.5px; vertical-align: middle; }
     .harga-box { display: flex; align-items: center; gap: 6px; }
     .harga-box label { font-weight: 800; white-space: nowrap; color: #0369a1; font-size: 12.5px; }
-    .harga-box input { width: 100%; border: 1px solid #0284c7; border-radius: 4px; padding: 3px 6px; outline: none; font-size: 12.5px; font-weight: 700; background-color: #ffffff; color: #007BFF; }
+    .harga-box input { width: 100%; border: 1px solid #0284c7; border-radius: 4px; padding: 3px 6px; outline: none; font-size: 12.5px; font-weight: 700; background-color: #ffffff; color: #007BFF !important; }
     .section2-container { display: flex; border: 1.5px solid #475569; margin-bottom: 8px; flex-wrap: wrap; }
     .section2-container .form-table { border: none; margin-bottom: 0; flex: 1 1 450px; }
     .image-upload-col { width: 210px; border-left: 1.5px solid #475569; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #f8fafc; flex-grow: 0; flex-shrink: 0; }
@@ -57,13 +57,15 @@
     .btn-excel { background-color: #16a34a; }
     .btn-import { background-color: #0284c7; }
     .btn-cancel { background-color: #475569 !important; }
+    
+    /* Tabel Data Tersimpan (Tetap menggunakan warna asli) */
     .history-section { width: 100%; max-width: 1100px; margin-top: 15px; background: #ffffff; padding: 16px; border-radius: 8px; border: 2px solid #64748b; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
     .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
     .history-header h3 { margin: 0; font-size: 14.5px; font-weight: 800; color: #0f172a; }
     .search-box { margin-bottom: 12px; display: flex; gap: 8px; }
-    .search-box input { width: 100%; padding: 7px 12px; font-size: 12.5px; border: 1.5px solid #64748b; border-radius: 4px; outline: none; }
+    .search-box input { width: 100%; padding: 7px 12px; font-size: 12.5px; border: 1.5px solid #64748b; border-radius: 4px; outline: none; color: #0f172a; }
     .table-responsive { overflow-x: auto; }
-    .history-table { width: 100%; border-collapse: collapse; font-size: 11.5px; min-width: 950px; }
+    .history-table { width: 100%; border-collapse: collapse; font-size: 11.5px; min-width: 950px; color: #0f172a; }
     .history-table th, .history-table td { border: 1px solid #64748b; padding: 5px 8px; text-align: left; }
     .history-table th { background-color: #e2e8f0; color: #0f172a; font-weight: 800; white-space: nowrap; }
     .btn-action { cursor: pointer; color: #fff; border: none; padding: 3px 6px; border-radius: 3px; font-size: 10.5px; font-weight: 700; }
@@ -80,7 +82,7 @@
     .login-card h2 { margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #0f172a; }
     .login-field { margin-bottom: 15px; text-align: left; }
     .login-field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; color: #334155; }
-    .login-field input { width: 100%; padding: 8px 10px; font-size: 13px; border: 1.5px solid #64748b; border-radius: 4px; outline: none; }
+    .login-field input { width: 100%; padding: 8px 10px; font-size: 13px; border: 1.5px solid #64748b; border-radius: 4px; outline: none; color: #0f172a; }
     .login-error { color: #dc2626; font-size: 11.5px; margin-bottom: 12px; display: none; font-weight: 600; }
     .user-info-badge { font-size: 11px; font-weight: bold; color: #2563eb; margin-top: 2px; display: block; }
     .btn-logout { background-color: #dc2626; color: #fff; border: none; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 4px; }
@@ -240,7 +242,7 @@
         </td>
         <td style="width: 50%;">
           <div class="harga-box">
-            <label>Harga Produksi Rp :</label>
+            <label>Harga Revisi Rp :</label>
             <input type="text" id="hargaProduksi" placeholder="0" oninput="formatInputRupiah(this)">
           </div>
         </td>
@@ -270,7 +272,7 @@
       </div>
     </div>
 
-    <div class="note">*Ajuan Harga Revisi terjadi apabila sampel yang sudah dibuat ada permintaan perbaikan (Perbaikan dari pabrik)</div>
+    <div class="note">*Ajuan harga revisi terjadi apabila sampel yang sudah dibuat ada permintaan perbaikan (Perbaikan dari pabrik)</div>
 
     <div class="footer">
       <div class="signature-box"><div class="signature-line"></div><div class="signature-text">Pembuat SPKS</div></div>
@@ -302,7 +304,7 @@
       <table class="history-table">
         <thead>
           <tr id="headerRow">
-            <th>No</th><th>Foto</th><th>No. SPKS</th><th>PO / Buyer</th><th>Tgl SPKS</th><th>Tgl Selesai</th><th>Pengrajin</th><th>Harga Sample</th><th>Harga Produksi</th><th>Nama Item</th><th>Jumlah</th><th>Ukuran</th><th>Material 1</th><th>Material 2</th><th>Material 3</th><th>Berat (KG)</th><th>Keterangan</th><th id="thAksi">Aksi</th>
+            <th>No</th><th>Foto</th><th>No. SPKS</th><th>PO / Buyer</th><th>Tgl SPKS</th><th>Tgl Selesai</th><th>Pengrajin</th><th>Harga Sample</th><th>Harga Revisi</th><th>Nama Item</th><th>Jumlah</th><th>Ukuran</th><th>Material 1</th><th>Material 2</th><th>Material 3</th><th>Berat (KG)</th><th>Keterangan</th><th id="thAksi">Aksi</th>
           </tr>
         </thead>
         <tbody id="tabelSimpan"></tbody>
@@ -710,7 +712,7 @@
         { header: 'Pengrajin', key: 'pengrajin', width: 20 },
         { header: 'Nama Item', key: 'namaItem', width: 25 },
         { header: 'Harga Sample', key: 'hargaSample', width: 18 },
-        { header: 'Harga Produksi', key: 'hargaProduksi', width: 18 }
+        { header: 'Harga Revisi', key: 'hargaProduksi', width: 18 }
       ];
 
       ws.addRow({
@@ -747,7 +749,7 @@
         { header: 'Tanggal Selesai', key: 'tglSelesaiSpks', width: 15 },
         { header: 'Pengrajin / SUB', key: 'pengrajin', width: 20 },
         { header: 'Harga Sample', key: 'hargaSample', width: 18 },
-        { header: 'Harga Produksi', key: 'hargaProduksi', width: 18 },
+        { header: 'Harga Revisi', key: 'hargaProduksi', width: 18 },
         { header: 'Nama Item', key: 'namaItem', width: 25 },
         { header: 'Jumlah', key: 'jumlahItem', width: 10 },
         { header: 'Ukuran', key: 'ukuran', width: 15 },
@@ -821,7 +823,7 @@
             tgl_selesai_spks: getVal(row, "Tanggal Selesai", "Tgl Selesai") || null,
             pengrajin: String(getVal(row, "Pengrajin / SUB", "Pengrajin") || ""),
             harga_sample: cleanRupiah(getVal(row, "Harga Sample")),
-            harga_produksi: cleanRupiah(getVal(row, "Harga Produksi")),
+            harga_produksi: cleanRupiah(getVal(row, "Harga Revisi")),
             nama_item: String(getVal(row, "Nama Item") || ""),
             jumlah_item: getVal(row, "Jumlah") ? parseInt(getVal(row, "Jumlah")) : null,
             ukuran: String(getVal(row, "Ukuran") || ""),
