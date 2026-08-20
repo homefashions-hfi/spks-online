@@ -232,8 +232,8 @@
 
     <table class="harga-table">
       <tr>
-        <td style="width: 50%;"><div class="harga-box"><label>Harga Sample Rp :</label><input type="number" id="hargaSample" placeholder="0"></div></td>
-        <td style="width: 50%;"><div class="harga-box"><label>Harga Revisi Rp :</label><input type="number" id="hargaProduksi" placeholder="0"></div></td>
+        <td style="width: 50%;"><div class="harga-box"><label>Harga Sample :</label><input type="text" id="hargaSample" placeholder="Rp 0" oninput="formatInputRupiah(this)"></div></td>
+        <td style="width: 50%;"><div class="harga-box"><label>Harga Revisi :</label><input type="text" id="hargaProduksi" placeholder="Rp 0" oninput="formatInputRupiah(this)"></div></td>
       </tr>
     </table>
 
@@ -336,6 +336,34 @@
     // VARIABLE PAGINASI
     let currentPage = 1;
     const rowsPerPage = 10;
+
+    // ===== HELPER FORMATTING RUPIAH =====
+    function formatRupiah(angka) {
+      if (!angka && angka !== 0) return "";
+      let numberString = angka.toString().replace(/[^,\d]/g, '');
+      let split = numberString.split(',');
+      let sisa = split[0].length % 3;
+      let rupiah = split[0].substr(0, sisa);
+      let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+      if (ribuan) {
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+      }
+
+      rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+      return rupiah ? 'Rp ' + rupiah : '';
+    }
+
+    function cleanRupiah(rupiahString) {
+      if (!rupiahString) return null;
+      let cleaned = rupiahString.toString().replace(/[^0-9]/g, '');
+      return cleaned ? parseFloat(cleaned) : null;
+    }
+
+    function formatInputRupiah(input) {
+      input.value = formatRupiah(input.value);
+    }
 
     // ===== FUNGSI HOVER POPUP ZOOM =====
     function showZoom(e, src) {
@@ -462,8 +490,8 @@
         tgl_spks: document.getElementById('tglSpks').value || null,
         tgl_selesai_spks: document.getElementById('tglSelesaiSpks').value || null,
         pengrajin: document.getElementById('pengrajin').value,
-        harga_sample: document.getElementById('hargaSample').value ? parseFloat(document.getElementById('hargaSample').value) : null,
-        harga_produksi: document.getElementById('hargaProduksi').value ? parseFloat(document.getElementById('hargaProduksi').value) : null,
+        harga_sample: cleanRupiah(document.getElementById('hargaSample').value),
+        harga_produksi: cleanRupiah(document.getElementById('hargaProduksi').value),
         nama_item: document.getElementById('namaItem').value,
         jumlah_item: document.getElementById('jumlahItem').value ? parseInt(document.getElementById('jumlahItem').value) : null,
         ukuran: document.getElementById('ukuran').value,
@@ -570,8 +598,8 @@
           <td>${item.tgl_spks || '-'}</td>
           <td>${item.tgl_selesai_spks || '-'}</td>
           <td>${item.pengrajin || '-'}</td>
-          <td>${item.harga_sample ? 'Rp ' + Number(item.harga_sample).toLocaleString('id-ID') : '-'}</td>
-          <td>${item.harga_produksi ? 'Rp ' + Number(item.harga_produksi).toLocaleString('id-ID') : '-'}</td>
+          <td>${item.harga_sample ? formatRupiah(item.harga_sample) : '-'}</td>
+          <td>${item.harga_produksi ? formatRupiah(item.harga_produksi) : '-'}</td>
           <td>${item.nama_item || '-'}</td>
           <td>${item.jumlah_item || '-'}</td>
           <td>${item.ukuran || '-'}</td>
@@ -612,8 +640,8 @@
       document.getElementById('tglSpks').value = data.tgl_spks || '';
       document.getElementById('tglSelesaiSpks').value = data.tgl_selesai_spks || '';
       document.getElementById('pengrajin').value = data.pengrajin || '';
-      document.getElementById('hargaSample').value = data.harga_sample || '';
-      document.getElementById('hargaProduksi').value = data.harga_produksi || '';
+      document.getElementById('hargaSample').value = data.harga_sample ? formatRupiah(data.harga_sample) : '';
+      document.getElementById('hargaProduksi').value = data.harga_produksi ? formatRupiah(data.harga_produksi) : '';
       document.getElementById('namaItem').value = data.nama_item || '';
       document.getElementById('jumlahItem').value = data.jumlah_item || '';
       document.getElementById('ukuran').value = data.ukuran || '';
@@ -685,8 +713,8 @@
         tglSpks: document.getElementById('tglSpks').value,
         pengrajin: document.getElementById('pengrajin').value,
         namaItem: document.getElementById('namaItem').value,
-        hargaSample: document.getElementById('hargaSample').value ? Number(document.getElementById('hargaSample').value) : "",
-        hargaProduksi: document.getElementById('hargaProduksi').value ? Number(document.getElementById('hargaProduksi').value) : ""
+        hargaSample: cleanRupiah(document.getElementById('hargaSample').value) || "",
+        hargaProduksi: cleanRupiah(document.getElementById('hargaProduksi').value) || ""
       });
 
       const buffer = await workbook.xlsx.writeBuffer();
@@ -786,8 +814,8 @@
             tgl_spks: getVal(row, "Tanggal SPKS", "Tgl SPKS") || null,
             tgl_selesai_spks: getVal(row, "Tanggal Selesai", "Tgl Selesai") || null,
             pengrajin: String(getVal(row, "Pengrajin / SUB", "Pengrajin") || ""),
-            harga_sample: getVal(row, "Harga Sample") ? parseFloat(getVal(row, "Harga Sample")) : null,
-            harga_produksi: getVal(row, "Harga Revisi") ? parseFloat(getVal(row, "Harga Revisi")) : null,
+            harga_sample: cleanRupiah(getVal(row, "Harga Sample")),
+            harga_produksi: cleanRupiah(getVal(row, "Harga Revisi")),
             nama_item: String(getVal(row, "Nama Item") || ""),
             jumlah_item: getVal(row, "Jumlah") ? parseInt(getVal(row, "Jumlah")) : null,
             ukuran: String(getVal(row, "Ukuran") || ""),
