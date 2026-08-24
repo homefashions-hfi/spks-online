@@ -12,62 +12,76 @@
   <!-- SheetJS (XLSX) for Reading/Importing Excel Files -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    /* ===== VARIABEL WARNA (LIGHT & DARK MODE) ===== */
+    /* ===== PALET WARNA & VARIABEL CSS ===== */
     :root {
-      --bg-body: #e2e8f0;
-      --bg-card: #ffffff;
-      --bg-subcard: #f8fafc;
-      --bg-table-label: #f1f5f9;
+      /* PENGATURAN BACKGROUND CUSTOM (GANTI GAMBAR/WARNA DI SINI) */
+      --bg-body: url('background.jpg') center/cover no-repeat fixed #f1f5f9; /* Ganti 'background.jpg' dengan nama/URL foto Anda */
+      
+      --bg-card: rgba(255, 255, 255, 0.95);
+      --bg-subcard: rgba(248, 250, 252, 0.95);
+      --bg-label: #f1f5f9;
       --bg-harga-table: #e0f2fe;
       --bg-th: #e2e8f0;
       --text-main: #0f172a;
       --text-muted: #334155;
       --text-input: #0369a1;
-      --border-color: #64748b;
+      --border-main: #64748b;
       --border-dark: #334155;
       --border-harga: #0284c7;
       --note-bg: #fef2f2;
       --note-border: #fca5a5;
       --note-text: #dc2626;
+      --input-bg: #ffffff;
     }
 
     [data-theme="dark"] {
-      --bg-body: #0f172a;
-      --bg-card: #1e293b;
-      --bg-subcard: #334155;
-      --bg-table-label: #334155;
-      --bg-harga-table: #0c4a6e;
+      /* PENGATURAN BACKGROUND CUSTOM MODE GELAP */
+      --bg-body: url('background-dark.jpg') center/cover no-repeat fixed #0f172a; /* Opsional: Gambar beda untuk mode gelap */
+      
+      --bg-card: rgba(30, 41, 59, 0.95);
+      --bg-subcard: rgba(51, 65, 85, 0.95);
+      --bg-label: #334155;
+      --bg-harga-table: rgba(12, 74, 110, 0.95);
       --bg-th: #334155;
       --text-main: #f8fafc;
       --text-muted: #cbd5e1;
       --text-input: #38bdf8;
-      --border-color: #475569;
+      --border-main: #475569;
       --border-dark: #64748b;
       --border-harga: #0284c7;
       --note-bg: #450a0a;
       --note-border: #991b1b;
       --note-text: #fca5a5;
+      --input-bg: #1e293b;
     }
 
-    * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
-    body { background-color: var(--bg-body); color: var(--text-main); display: flex; flex-direction: column; align-items: center; padding: 15px 10px; margin: 0; min-height: 100vh; }
-    .container { width: 100%; max-width: 1100px; background-color: var(--bg-card); border: 2px solid var(--border-color); border-radius: 8px; padding: 18px 22px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; transition: background-color 0.2s, color 0.2s; }
     
-    /* Tombol Theme Toggle */
-    .theme-toggle-btn {
-      background-color: var(--bg-subcard);
-      color: var(--text-main);
-      border: 1.5px solid var(--border-color);
-      padding: 5px 10px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 5px;
+    /* Body & Layout Utama (Full Width) */
+    body { 
+      background: var(--bg-body); 
+      color: var(--text-main); 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      padding: 10px; 
+      margin: 0; 
+      min-height: 100vh; 
     }
 
+    /* Container Full Width Memenuhi Layar */
+    .container { 
+      width: 100% !important; 
+      max-width: 100% !important; 
+      background-color: var(--bg-card); 
+      border: 2px solid var(--border-main); 
+      border-radius: 8px; 
+      padding: 18px 22px; 
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+      backdrop-filter: blur(4px);
+    }
+
+    /* Teks Input */
     .container input[type="text"],
     .container input[type="number"],
     .container input[type="date"] {
@@ -77,32 +91,56 @@
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--border-dark); gap: 10px; flex-wrap: wrap; }
     .logo-left-img { max-height: 58px; width: auto; object-fit: contain; display: block; }
     .header-title { font-size: 26px; font-weight: 800; text-align: center; color: var(--text-main); letter-spacing: 0.5px; flex: 1; }
-    .spks-no-box { text-align: right; }
-    .spks-no-box .label { font-size: 11px; font-weight: 800; margin-bottom: 2px; color: var(--text-muted); text-transform: uppercase; }
-    .spks-no-box input { font-size: 14px; font-weight: 800; text-align: center; width: 130px; border: 1.5px solid var(--border-color); border-radius: 4px; padding: 3px 6px; background-color: var(--bg-subcard); color: var(--text-input) !important; outline: none; }
-    .form-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; border: 1.5px solid var(--border-color); }
-    .form-table td { border: 1px solid var(--border-color); padding: 4px 8px; vertical-align: middle; font-size: 12.5px; }
-    .label-col { width: 15%; font-weight: 700; color: var(--text-main); background-color: var(--bg-table-label); white-space: nowrap; }
-    .colon-col { width: 12px; text-align: center; font-weight: 700; color: var(--text-muted); background-color: var(--bg-table-label); }
-    .input-col input { width: 100%; border: none; outline: none; font-size: 12.5px; background: transparent; color: var(--text-input) !important; font-weight: 600; padding: 2px 4px; }
+    
+    .spks-no-box { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .spks-no-box .label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
+    .spks-no-box input { font-size: 14px; font-weight: 800; text-align: center; width: 130px; border: 1.5px solid var(--border-main); border-radius: 4px; padding: 3px 6px; background-color: var(--bg-subcard); color: var(--text-input) !important; outline: none; }
+    
+    /* Tombol Tema (Dark/Light Mode Switcher) */
+    .theme-toggle-btn {
+      background-color: var(--bg-label);
+      color: var(--text-main);
+      border: 1.5px solid var(--border-main);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 4px;
+    }
+
+    .form-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; border: 1.5px solid var(--border-main); }
+    .form-table td { border: 1px solid var(--border-main); padding: 4px 8px; vertical-align: middle; font-size: 12.5px; }
+    .label-col { width: 15%; font-weight: 700; color: var(--text-main); background-color: var(--bg-label); white-space: nowrap; }
+    .colon-col { width: 12px; text-align: center; font-weight: 700; color: var(--text-muted); background-color: var(--bg-label); }
+    .input-col input { width: 100%; border: none; outline: none; font-size: 12.5px; background: var(--input-bg); color: var(--text-input) !important; font-weight: 600; padding: 2px 4px; }
+    
     .harga-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; border: 1.5px solid var(--border-harga); background-color: var(--bg-harga-table); }
     .harga-table td { border: 1px solid var(--border-harga); padding: 5px 10px; font-size: 12.5px; vertical-align: middle; }
     .harga-box { display: flex; align-items: center; gap: 6px; }
     .harga-box label { font-weight: 800; white-space: nowrap; color: var(--text-input); font-size: 12.5px; }
-    .harga-box input { width: 100%; border: 1px solid var(--border-harga); border-radius: 4px; padding: 3px 6px; outline: none; font-size: 12.5px; font-weight: 700; background-color: var(--bg-card); color: var(--text-input) !important; }
-    .section2-container { display: flex; border: 1.5px solid var(--border-color); margin-bottom: 8px; flex-wrap: wrap; }
+    .harga-box input { width: 100%; border: 1px solid var(--border-harga); border-radius: 4px; padding: 3px 6px; outline: none; font-size: 12.5px; font-weight: 700; background-color: var(--input-bg); color: var(--text-input) !important; }
+    
+    .section2-container { display: flex; border: 1.5px solid var(--border-main); margin-bottom: 8px; flex-wrap: wrap; }
     .section2-container .form-table { border: none; margin-bottom: 0; flex: 1 1 450px; }
-    .image-upload-col { width: 210px; border-left: 1.5px solid var(--border-color); padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: var(--bg-subcard); flex-grow: 0; flex-shrink: 0; }
-    .image-preview-box { width: 100%; height: 140px; border: 1.5px dashed var(--border-color); border-radius: 4px; display: flex; align-items: center; justify-content: center; background-color: var(--bg-card); overflow: hidden; margin-bottom: 6px; position: relative; }
+    
+    .image-upload-col { width: 210px; border-left: 1.5px solid var(--border-main); padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: var(--bg-subcard); flex-grow: 0; flex-shrink: 0; }
+    .image-preview-box { width: 100%; height: 140px; border: 1.5px dashed var(--border-main); border-radius: 4px; display: flex; align-items: center; justify-content: center; background-color: var(--input-bg); overflow: hidden; margin-bottom: 6px; position: relative; }
     .image-preview-box img { width: 100%; height: 100%; object-fit: contain; }
     .image-placeholder-text { color: var(--text-muted); font-size: 11px; font-weight: 600; text-align: center; padding: 4px; }
     .btn-upload-label { background-color: #2563eb; color: #ffffff; padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; display: inline-block; text-align: center; }
+    
     .note { color: var(--note-text); font-size: 11px; font-weight: 900; margin-top: 6px; line-height: 1.4; text-align: left; background-color: var(--note-bg); padding: 6px 10px; border-radius: 4px; border: 1px solid var(--note-border); }
     
+    /* Footer & Tanda Tangan */
     .footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 33px; gap: 15px; flex-wrap: wrap; }
     .signature-box { text-align: center; width: 180px; padding-top: 65px; }
     .signature-line { border-bottom: 2px solid var(--border-dark); margin-bottom: 6px; }
     .signature-text { font-size: 11.5px; font-weight: 800; color: var(--text-main); }
+    
     .button-group { display: flex; gap: 8px; margin-bottom: 2px; flex-wrap: wrap; justify-content: center; }
     .btn { background-color: #2563eb; color: #ffffff; border: none; border-radius: 4px; padding: 7px 15px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .btn:disabled { background-color: #94a3b8 !important; cursor: not-allowed; }
@@ -110,33 +148,40 @@
     .btn-import { background-color: #0284c7; }
     .btn-cancel { background-color: #475569 !important; }
     
-    .history-section { width: 100%; max-width: 1100px; margin-top: 15px; background: var(--bg-card); padding: 16px; border-radius: 8px; border: 2px solid var(--border-color); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+    /* Tabel Data Tersimpan Full Width */
+    .history-section { width: 100% !important; max-width: 100% !important; margin-top: 15px; background: var(--bg-card); padding: 16px; border-radius: 8px; border: 2px solid var(--border-main); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); backdrop-filter: blur(4px); }
     .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
     .history-header h3 { margin: 0; font-size: 14.5px; font-weight: 800; color: var(--text-main); }
+    
     .search-box { margin-bottom: 12px; display: flex; gap: 8px; }
-    .search-box input { width: 100%; padding: 7px 12px; font-size: 12.5px; border: 1.5px solid var(--border-color); border-radius: 4px; outline: none; background-color: var(--bg-subcard); color: var(--text-main); }
+    .search-box input { width: 100%; padding: 7px 12px; font-size: 12.5px; border: 1.5px solid var(--border-main); border-radius: 4px; outline: none; background: var(--input-bg); color: var(--text-main); }
+    
     .table-responsive { overflow-x: auto; }
     .history-table { width: 100%; border-collapse: collapse; font-size: 11.5px; min-width: 950px; color: var(--text-main); }
-    .history-table th, .history-table td { border: 1px solid var(--border-color); padding: 5px 8px; text-align: left; }
+    .history-table th, .history-table td { border: 1px solid var(--border-main); padding: 5px 8px; text-align: left; }
     .history-table th { background-color: var(--bg-th); color: var(--text-main); font-weight: 800; white-space: nowrap; }
     .btn-action { cursor: pointer; color: #fff; border: none; padding: 3px 6px; border-radius: 3px; font-size: 10.5px; font-weight: 700; }
     
-    .pagination-container { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border-color); }
+    /* Pagination */
+    .pagination-container { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border-main); }
     .pagination-info { font-size: 12px; font-weight: 700; color: var(--text-muted); }
     .pagination-buttons { display: flex; gap: 6px; }
-    .btn-page { background-color: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border-color); padding: 5px 12px; font-size: 11.5px; font-weight: 700; border-radius: 4px; cursor: pointer; }
-    .btn-page:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-page { background-color: var(--border-main); color: #ffffff; border: none; padding: 5px 12px; font-size: 11.5px; font-weight: 700; border-radius: 4px; cursor: pointer; }
+    .btn-page:disabled { background-color: #cbd5e1; cursor: not-allowed; }
 
+    /* Login Modal */
     .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.95); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-    .login-card { background-color: var(--bg-card); padding: 30px 25px; border-radius: 8px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; border: 1px solid var(--border-color); }
+    .login-card { background-color: var(--bg-card); padding: 30px 25px; border-radius: 8px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center; border: 1px solid var(--border-main); }
     .login-card h2 { margin-top: 0; margin-bottom: 20px; font-size: 20px; color: var(--text-main); }
     .login-field { margin-bottom: 15px; text-align: left; }
     .login-field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; color: var(--text-muted); }
-    .login-field input { width: 100%; padding: 8px 10px; font-size: 13px; border: 1.5px solid var(--border-color); border-radius: 4px; outline: none; background-color: var(--bg-subcard); color: var(--text-main); }
+    .login-field input { width: 100%; padding: 8px 10px; font-size: 13px; border: 1.5px solid var(--border-main); border-radius: 4px; outline: none; background: var(--input-bg); color: var(--text-main); }
     .login-error { color: #dc2626; font-size: 11.5px; margin-bottom: 12px; display: none; font-weight: 600; }
+    
     .user-info-badge { font-size: 11px; font-weight: bold; color: #2563eb; margin-top: 2px; display: block; }
     .btn-logout { background-color: #dc2626; color: #fff; border: none; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 4px; }
 
+    /* Pop-up Zoom Gambar */
     #imgZoomPreview {
       display: none;
       position: fixed;
@@ -158,19 +203,19 @@
       border-radius: 4px;
     }
 
-    /* Print Styles */
+    /* PRINT STYLES */
     @media print {
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; color: #0f172a !important; }
-      .container { border: 2px solid #64748b !important; box-shadow: none !important; width: 100% !important; max-width: 100% !important; padding: 18px 22px !important; border-radius: 8px !important; background: #ffffff !important; }
+      body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; }
+      .container { border: 2px solid #64748b !important; box-shadow: none !important; width: 100% !important; max-width: 100% !important; padding: 18px 22px !important; border-radius: 8px !important; }
       .history-section, .button-group, .btn-upload-label, #btnHapusGambar, .user-info-badge, .btn-logout, .login-overlay, #imgZoomPreview, .theme-toggle-btn { display: none !important; }
       .spks-no-box input { border: 1.5px solid #475569 !important; background-color: #f8fafc !important; color: #0369a1 !important; }
       .harga-table { border: 1.5px solid #0284c7 !important; background-color: #e0f2fe !important; }
       .harga-box input { border: 1px solid #0284c7 !important; background-color: #ffffff !important; color: #0369a1 !important; }
       .input-col input { color: #0369a1 !important; }
-      .label-col, .colon-col { background-color: #f1f5f9 !important; color: #0f172a !important; }
+      .label-col, .colon-col { background-color: #f1f5f9 !important; }
       .image-upload-col { background-color: #f8fafc !important; }
-      .image-preview-box { border: 1.5px dashed #64748b !important; background: #ffffff !important; }
+      .image-preview-box { border: 1.5px dashed #64748b !important; }
       .note { background-color: #fef2f2 !important; border: 1px solid #fca5a5 !important; color: #dc2626 !important; }
     }
   </style>
@@ -208,14 +253,12 @@
         <img src="HFI logo.png" alt="HomeFashions Lifestyle Inspirations" class="logo-left-img">
       </div>
       <div class="header-title">SPKS ( SURAT PERINTAH KERJA SAMPLE )</div>
-      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
-        <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark Mode</button>
-        <div class="spks-no-box">
-          <div class="label">No. SPKS :</div>
-          <input type="text" id="noSpks" placeholder="060826-001">
-          <span class="user-info-badge" id="userInfoBadge"></span>
-          <div><button type="button" class="btn-logout" onclick="logout()">Log Out</button></div>
-        </div>
+      <div class="spks-no-box">
+        <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" id="btnThemeToggle">🌙 Dark Mode</button>
+        <div class="label">No. SPKS :</div>
+        <input type="text" id="noSpks" placeholder="060826-001">
+        <span class="user-info-badge" id="userInfoBadge"></span>
+        <div><button type="button" class="btn-logout" onclick="logout()">Log Out</button></div>
       </div>
     </div>
 
@@ -317,27 +360,26 @@
   </div>
 
   <script>
-    // ===== FUNGSI FITUR DARK MODE & LIGHT MODE =====
-    function initTheme() {
-      const savedTheme = localStorage.getItem('spks_theme') || 'light';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      updateThemeButton(savedTheme);
-    }
-
+    // ===== FUNGSI FITUR DARK / LIGHT MODE =====
     function toggleTheme() {
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('spks_theme', newTheme);
-      updateThemeButton(newTheme);
+      const currentTheme = document.documentElement.getAttribute("data-theme");
+      const newTheme = currentTheme === "dark" ? "light" : "dark";
+      
+      document.documentElement.setAttribute("data-theme", newTheme);
+      localStorage.setItem("spks_theme", newTheme);
+      updateThemeButtonText(newTheme);
     }
 
-    function updateThemeButton(theme) {
-      const btn = document.getElementById('themeBtn');
-      if (theme === 'dark') {
-        btn.innerHTML = '☀️ Light Mode';
-      } else {
-        btn.innerHTML = '🌙 Dark Mode';
+    function initTheme() {
+      const savedTheme = localStorage.getItem("spks_theme") || "light";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+      updateThemeButtonText(savedTheme);
+    }
+
+    function updateThemeButtonText(theme) {
+      const btn = document.getElementById("btnThemeToggle");
+      if (btn) {
+        btn.innerText = theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode";
       }
     }
 
@@ -582,6 +624,7 @@
         return;
       }
 
+      // Filter Data Berdasarkan Kata Kunci Pencarian
       const filteredData = listData.filter(item => {
         const itemString = `${item.no_spks} ${item.po_buyer} ${item.nama_item} ${item.pengrajin}`.toLowerCase();
         return !keyword || itemString.includes(keyword);
@@ -595,6 +638,7 @@
         return;
       }
 
+      // Hitung Batas Paginasi (10 Baris per Halaman)
       const totalItems = filteredData.length;
       const totalPages = Math.ceil(totalItems / rowsPerPage);
 
@@ -637,6 +681,7 @@
         </tr>`;
       });
 
+      // Update Tampilan Status & Tombol Paginasi
       document.getElementById('paginationInfo').innerText = `Menampilkan ${startIndex + 1}-${endIndex} dari ${totalItems} data (Halaman ${currentPage} / ${totalPages})`;
       document.getElementById('btnPrev').disabled = (currentPage === 1);
       document.getElementById('btnNext').disabled = (currentPage === totalPages);
