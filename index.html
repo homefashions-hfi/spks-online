@@ -323,19 +323,19 @@
         <tr><td class="label-col">material2</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material2"></td></tr>
         <tr><td class="label-col">material3</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material3"></td></tr>
         
-        <!-- BARIS BERAT RANGKA, BERAT ANYAM, DAN BERAT TOTAL DIBUAT SATU BARIS -->
+        <!-- BARIS BERAT material1, BERAT material2, DAN BERAT TOTAL DIBUAT SATU BARIS -->
         <tr>
           <td class="label-col">Rincian Berat ( KG )</td>
           <td class="colon-col">:</td>
           <td class="input-col">
             <div class="inline-row">
               <div class="inline-item">
-                <label for="beratRangka">Rangka:</label>
-                <input type="number" step="0.01" id="beratRangka" placeholder="0" oninput="hitungBeratTotal()">
+                <label for="beratmaterial1">material1:</label>
+                <input type="number" step="0.01" id="beratmaterial1" placeholder="0" oninput="hitungBeratTotal()">
               </div>
               <div class="inline-item">
-                <label for="beratAnyam">Anyam:</label>
-                <input type="number" step="0.01" id="beratAnyam" placeholder="0" oninput="hitungBeratTotal()">
+                <label for="beratmaterial2">material2:</label>
+                <input type="number" step="0.01" id="beratmaterial2" placeholder="0" oninput="hitungBeratTotal()">
               </div>
               <div class="inline-item">
                 <label for="beratTotal" style="color: #0284c7;">Total:</label>
@@ -391,7 +391,7 @@
       <table class="history-table">
         <thead>
           <tr id="headerRow">
-            <th>No</th><th>Foto</th><th>No. SPKS</th><th>PO / Buyer</th><th>Tgl SPKS</th><th>Tgl Selesai</th><th>Pengrajin</th><th>Harga Sample</th><th>Harga Revisi</th><th>Nama Item</th><th>Jumlah</th><th>Ukuran</th><th>Rangka</th><th>Anyam/Dekor/Bebed</th><th>Finishing</th><th>Berat Rangka (KG)</th><th>Berat Anyam (KG)</th><th>Berat Total (KG)</th><th>Keterangan</th><th id="thAksi">Aksi</th>
+            <th>No</th><th>Foto</th><th>No. SPKS</th><th>PO / Buyer</th><th>Tgl SPKS</th><th>Tgl Selesai</th><th>Pengrajin</th><th>Harga Sample</th><th>Harga Revisi</th><th>Nama Item</th><th>Jumlah</th><th>Ukuran</th><th>material1</th><th>material2/Dekor/Bebed</th><th>material3</th><th>Berat material1 (KG)</th><th>Berat material2 (KG)</th><th>Berat Total (KG)</th><th>Keterangan</th><th id="thAksi">Aksi</th>
           </tr>
         </thead>
         <tbody id="tabelSimpan"></tbody>
@@ -461,8 +461,8 @@
 
     // ===== FUNGSI HITUNG BERAT TOTAL OTOMATIS =====
     function hitungBeratTotal() {
-      const r = parseFloat(document.getElementById('beratRangka').value) || 0;
-      const a = parseFloat(document.getElementById('beratAnyam').value) || 0;
+      const r = parseFloat(document.getElementById('beratmaterial1').value) || 0;
+      const a = parseFloat(document.getElementById('beratmaterial2').value) || 0;
       const total = r + a;
       document.getElementById('beratTotal').value = total > 0 ? total.toFixed(2) : '';
     }
@@ -638,8 +638,8 @@
         material1: document.getElementById('material1').value,
         material2: document.getElementById('material2').value,
         material3: document.getElementById('material3').value,
-        berat_rangka: document.getElementById('beratRangka').value ? parseFloat(document.getElementById('beratRangka').value) : null,
-        berat_anyam: document.getElementById('beratAnyam').value ? parseFloat(document.getElementById('beratAnyam').value) : null,
+        berat_material1: document.getElementById('beratmaterial1').value ? parseFloat(document.getElementById('beratmaterial1').value) : null,
+        berat_material2: document.getElementById('beratmaterial2').value ? parseFloat(document.getElementById('beratmaterial2').value) : null,
         keterangan: document.getElementById('keterangan').value,
         gambar: base64Gambar
       };
@@ -698,7 +698,7 @@
         let query = supabaseClient
           .from('spks')
           .select(
-            'id,no_spks,po_buyer,tgl_spks,tgl_selesai_spks,pengrajin,harga_sample,harga_produksi,nama_item,jumlah_item,ukuran,material1,material2,material3,berat_rangka,berat_anyam,keterangan,gambar',
+            'id,no_spks,po_buyer,tgl_spks,tgl_selesai_spks,pengrajin,harga_sample,harga_produksi,nama_item,jumlah_item,ukuran,material1,material2,material3,berat_material1,berat_material2,keterangan,gambar',
             { count: 'exact' }
           )
           .order('id', { ascending: false })
@@ -746,9 +746,9 @@
             : '';
 
           // Calculate Total Weight dynamically
-          const bRangka = parseFloat(item.berat_rangka) || 0;
-          const bAnyam = parseFloat(item.berat_anyam) || 0;
-          const bTotal = bRangka + bAnyam;
+          const bmaterial1 = parseFloat(item.berat_material1) || 0;
+          const bmaterial2 = parseFloat(item.berat_material2) || 0;
+          const bTotal = bmaterial1 + bmaterial2;
 
           tbody.innerHTML += `<tr>
             <td>${from + index + 1}</td>
@@ -766,8 +766,8 @@
             <td>${item.material1 || '-'}</td>
             <td>${item.material2 || '-'}</td>
             <td>${item.material3 || '-'}</td>
-            <td>${item.berat_rangka ? item.berat_rangka + ' KG' : '-'}</td>
-            <td>${item.berat_anyam ? item.berat_anyam + ' KG' : '-'}</td>
+            <td>${item.berat_material1 ? item.berat_material1 + ' KG' : '-'}</td>
+            <td>${item.berat_material2 ? item.berat_material2 + ' KG' : '-'}</td>
             <td><b>${bTotal > 0 ? bTotal.toFixed(2) + ' KG' : '-'}</b></td>
             <td>${item.keterangan || '-'}</td>
             ${tdAksi}
@@ -808,7 +808,7 @@
 
       const { data, error } = await supabaseClient
         .from('spks')
-        .select('id,no_spks,po_buyer,tgl_spks,tgl_selesai_spks,pengrajin,harga_sample,harga_produksi,nama_item,jumlah_item,ukuran,material1,material2,material3,berat_rangka,berat_anyam,keterangan,gambar')
+        .select('id,no_spks,po_buyer,tgl_spks,tgl_selesai_spks,pengrajin,harga_sample,harga_produksi,nama_item,jumlah_item,ukuran,material1,material2,material3,berat_material1,berat_material2,keterangan,gambar')
         .eq('id', id)
         .single();
       if (error || !data) return;
@@ -827,8 +827,8 @@
       document.getElementById('material1').value = data.material1 || '';
       document.getElementById('material2').value = data.material2 || '';
       document.getElementById('material3').value = data.material3 || '';
-      document.getElementById('beratRangka').value = data.berat_rangka || '';
-      document.getElementById('beratAnyam').value = data.berat_anyam || '';
+      document.getElementById('beratmaterial1').value = data.berat_material1 || '';
+      document.getElementById('beratmaterial2').value = data.berat_material2 || '';
       document.getElementById('keterangan').value = data.keterangan || '';
 
       hitungBeratTotal();
@@ -927,11 +927,11 @@
         { header: 'Nama Item', key: 'namaItem', width: 25 },
         { header: 'Jumlah', key: 'jumlahItem', width: 10 },
         { header: 'Ukuran', key: 'ukuran', width: 15 },
-        { header: 'Rangka', key: 'material1', width: 15 },
-        { header: 'Anyam/Dekor/Bebed', key: 'material2', width: 15 },
-        { header: 'Finishing', key: 'material3', width: 15 },
-        { header: 'Berat Rangka (KG)', key: 'beratRangka', width: 18 },
-        { header: 'Berat Anyam (KG)', key: 'beratAnyam', width: 18 },
+        { header: 'material1', key: 'material1', width: 15 },
+        { header: 'material2/Dekor/Bebed', key: 'material2', width: 15 },
+        { header: 'material3', key: 'material3', width: 15 },
+        { header: 'Berat material1 (KG)', key: 'beratmaterial1', width: 18 },
+        { header: 'Berat material2 (KG)', key: 'beratmaterial2', width: 18 },
         { header: 'Berat Total (KG)', key: 'beratTotal', width: 18 },
         { header: 'Keterangan', key: 'keterangan', width: 25 }
       ];
@@ -940,9 +940,9 @@
       ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF16A34A' } };
 
       listData.forEach((item, index) => {
-        const bRangka = parseFloat(item.berat_rangka) || 0;
-        const bAnyam = parseFloat(item.berat_anyam) || 0;
-        const bTotal = bRangka + bAnyam;
+        const bmaterial1 = parseFloat(item.berat_material1) || 0;
+        const bmaterial2 = parseFloat(item.berat_material2) || 0;
+        const bTotal = bmaterial1 + bmaterial2;
 
         ws.addRow({
           no: index + 1,
@@ -959,8 +959,8 @@
           material1: item.material1,
           material2: item.material2,
           material3: item.material3,
-          beratRangka: item.berat_rangka ? Number(item.berat_rangka) : "",
-          beratAnyam: item.berat_anyam ? Number(item.berat_anyam) : "",
+          beratmaterial1: item.berat_material1 ? Number(item.berat_material1) : "",
+          beratmaterial2: item.berat_material2 ? Number(item.berat_material2) : "",
           beratTotal: bTotal > 0 ? Number(bTotal.toFixed(2)) : "",
           keterangan: item.keterangan
         });
@@ -1009,11 +1009,11 @@
             nama_item: String(getVal(row, "Nama Item") || ""),
             jumlah_item: getVal(row, "Jumlah") ? parseInt(getVal(row, "Jumlah")) : null,
             ukuran: String(getVal(row, "Ukuran") || ""),
-            material1: String(getVal(row, "Rangka") || ""),
-            material2: String(getVal(row, "Anyam/Dekor/Bebed") || ""),
-            material3: String(getVal(row, "Finishing") || ""),
-            berat_rangka: getVal(row, "Berat Rangka (KG)", "Berat Rangka") ? parseFloat(getVal(row, "Berat Rangka (KG)", "Berat Rangka")) : null,
-            berat_anyam: getVal(row, "Berat Anyam (KG)", "Berat Anyam") ? parseFloat(getVal(row, "Berat Anyam (KG)", "Berat Anyam")) : null,
+            material1: String(getVal(row, "material1") || ""),
+            material2: String(getVal(row, "material2/Dekor/Bebed") || ""),
+            material3: String(getVal(row, "material3") || ""),
+            berat_material1: getVal(row, "Berat material1 (KG)", "Berat material1") ? parseFloat(getVal(row, "Berat material1 (KG)", "Berat material1")) : null,
+            berat_material2: getVal(row, "Berat material2 (KG)", "Berat material2") ? parseFloat(getVal(row, "Berat material2 (KG)", "Berat material2")) : null,
             keterangan: String(getVal(row, "Keterangan") || "")
           })).filter(item => item.no_spks || item.nama_item || item.po_buyer);
 
@@ -1048,8 +1048,8 @@
       document.getElementById('material1').value = '';
       document.getElementById('material2').value = '';
       document.getElementById('material3').value = '';
-      document.getElementById('beratRangka').value = '';
-      document.getElementById('beratAnyam').value = '';
+      document.getElementById('beratmaterial1').value = '';
+      document.getElementById('beratmaterial2').value = '';
       document.getElementById('beratTotal').value = '';
       document.getElementById('keterangan').value = '';
       hapusGambar();
