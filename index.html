@@ -16,8 +16,8 @@
   <style>
     /* ===== PALET WARNA & VARIABEL CSS ===== */
     :root {
-      /* PENGATURAN BACKGROUND CUSTOM (GANTI GAMBAR/WARNA DI SINI) */
-      --bg-body: url('background.jpg') center/cover no-repeat fixed #f1f5f9; /* Ganti 'background.jpg' dengan nama/URL foto Anda */
+      /* PENGATURAN BACKGROUND CUSTOM */
+      --bg-body: url('background.jpg') center/cover no-repeat fixed #f1f5f9; 
       
       --bg-card: rgba(255, 255, 255, 0.95);
       --bg-subcard: rgba(248, 250, 252, 0.95);
@@ -38,7 +38,7 @@
 
     [data-theme="dark"] {
       /* PENGATURAN BACKGROUND CUSTOM MODE GELAP */
-      --bg-body: url('background-dark.jpg') center/cover no-repeat fixed #0f172a; /* Opsional: Gambar beda untuk mode gelap */
+      --bg-body: url('background-dark.jpg') center/cover no-repeat fixed #0f172a; 
       
       --bg-card: rgba(30, 41, 59, 0.95);
       --bg-subcard: rgba(51, 65, 85, 0.95);
@@ -59,7 +59,7 @@
 
     * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; transition: background-color 0.2s, color 0.2s; }
     
-    /* Body & Layout Utama (Full Width) */
+    /* Body & Layout Utama */
     body { 
       background: var(--bg-body); 
       color: var(--text-main); 
@@ -71,7 +71,7 @@
       min-height: 100vh; 
     }
 
-    /* Container Full Width Memenuhi Layar */
+    /* Container Full Width */
     .container { 
       width: 100% !important; 
       max-width: 100% !important; 
@@ -98,7 +98,7 @@
     .spks-no-box .label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
     .spks-no-box input { font-size: 14px; font-weight: 800; text-align: center; width: 130px; border: 1.5px solid var(--border-main); border-radius: 4px; padding: 3px 6px; background-color: var(--bg-subcard); color: var(--text-input) !important; outline: none; }
     
-    /* Tombol Tema (Dark/Light Mode Switcher) */
+    /* Tombol Tema */
     .theme-toggle-btn {
       background-color: var(--bg-label);
       color: var(--text-main);
@@ -150,7 +150,7 @@
     .btn-import { background-color: #0284c7; }
     .btn-cancel { background-color: #475569 !important; }
     
-    /* Tabel Data Tersimpan Full Width */
+    /* Tabel Data Tersimpan */
     .history-section { width: 100% !important; max-width: 100% !important; margin-top: 15px; background: var(--bg-card); padding: 16px; border-radius: 8px; border: 2px solid var(--border-main); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); backdrop-filter: blur(4px); }
     .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
     .history-header h3 { margin: 0; font-size: 14.5px; font-weight: 800; color: var(--text-main); }
@@ -159,7 +159,7 @@
     .search-box input { width: 100%; padding: 7px 12px; font-size: 12.5px; border: 1.5px solid var(--border-main); border-radius: 4px; outline: none; background: var(--input-bg); color: var(--text-main); }
     
     .table-responsive { overflow-x: auto; }
-    .history-table { width: 100%; border-collapse: collapse; font-size: 11.5px; min-width: 950px; color: var(--text-main); }
+    .history-table { width: 100%; border-collapse: collapse; font-size: 11.5px; min-width: 1050px; color: var(--text-main); }
     .history-table th, .history-table td { border: 1px solid var(--border-main); padding: 5px 8px; text-align: left; }
     .history-table th { background-color: var(--bg-th); color: var(--text-main); font-weight: 800; white-space: nowrap; }
     .btn-action { cursor: pointer; color: #fff; border: none; padding: 3px 6px; border-radius: 3px; font-size: 10.5px; font-weight: 700; }
@@ -177,7 +177,9 @@
     .login-card h2 { margin-top: 0; margin-bottom: 20px; font-size: 20px; color: var(--text-main); }
     .login-field { margin-bottom: 15px; text-align: left; }
     .login-field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; color: var(--text-muted); }
-    .login-field input { width: 100%; padding: 8px 10px; font-size: 13px; border: 1.5px solid var(--border-main); border-radius: 4px; outline: none; background: var(--input-bg); color: var(--text-main); }
+    .login-field input[type="text"], .login-field input[type="password"] { width: 100%; padding: 8px 10px; font-size: 13px; border: 1.5px solid var(--border-main); border-radius: 4px; outline: none; background: var(--input-bg); color: var(--text-main); }
+    .login-remember { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--text-main); margin-bottom: 15px; cursor: pointer; }
+    .login-remember input { cursor: pointer; }
     .login-error { color: #dc2626; font-size: 11.5px; margin-bottom: 12px; display: none; font-weight: 600; }
     
     .user-info-badge { font-size: 11px; font-weight: bold; color: #2563eb; margin-top: 2px; display: block; }
@@ -203,6 +205,26 @@
       object-fit: contain;
       display: block;
       border-radius: 4px;
+    }
+
+    /* Inline flex untuk baris gabungan */
+    .inline-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      width: 100%;
+    }
+    .inline-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+    .inline-item label {
+      white-space: nowrap;
+      font-weight: 700;
+      font-size: 11.5px;
+      color: var(--text-main);
     }
 
     /* PRINT STYLES */
@@ -243,7 +265,10 @@
           <label for="password">Password</label>
           <input type="password" id="password" required>
         </div>
-        <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">MASUK</button>
+        <label class="login-remember">
+          <input type="checkbox" id="rememberMe"> Ingat Saya
+        </label>
+        <button type="submit" class="btn" style="width: 100%; margin-top: 5px;">MASUK</button>
       </form>
     </div>
   </div>
@@ -295,9 +320,31 @@
         <tr><td class="label-col">Jumlah Item</td><td class="colon-col">:</td><td class="input-col"><input type="number" id="jumlahItem"></td></tr>
         <tr><td class="label-col">Ukuran</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="ukuran"></td></tr>
         <tr><td class="label-col">Rangka</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material1"></td></tr>
-        <tr><td class="label-col">Anyam</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material2"></td></tr>
+        <tr><td class="label-col">Anyam/Dekor/Bebed</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material2"></td></tr>
         <tr><td class="label-col">Finishing</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material3"></td></tr>
-        <tr><td class="label-col">Berat ( KG )</td><td class="colon-col">:</td><td class="input-col"><input type="number" step="0.01" id="berat" placeholder="0"></td></tr>
+        
+        <!-- BARIS BERAT RANGKA, BERAT ANYAM, DAN BERAT TOTAL DIBUAT SATU BARIS -->
+        <tr>
+          <td class="label-col">Rincian Berat ( KG )</td>
+          <td class="colon-col">:</td>
+          <td class="input-col">
+            <div class="inline-row">
+              <div class="inline-item">
+                <label for="beratRangka">Rangka:</label>
+                <input type="number" step="0.01" id="beratRangka" placeholder="0" oninput="hitungBeratTotal()">
+              </div>
+              <div class="inline-item">
+                <label for="beratAnyam">Anyam:</label>
+                <input type="number" step="0.01" id="beratAnyam" placeholder="0" oninput="hitungBeratTotal()">
+              </div>
+              <div class="inline-item">
+                <label for="beratTotal" style="color: #0284c7;">Total:</label>
+                <input type="number" step="0.01" id="beratTotal" placeholder="0" readonly style="background-color: var(--bg-label); font-weight: bold;">
+              </div>
+            </div>
+          </td>
+        </tr>
+
         <tr><td class="label-col">Keterangan</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="keterangan"></td></tr>
       </table>
 
@@ -344,7 +391,7 @@
       <table class="history-table">
         <thead>
           <tr id="headerRow">
-            <th>No</th><th>Foto</th><th>No. SPKS</th><th>PO / Buyer</th><th>Tgl SPKS</th><th>Tgl Selesai</th><th>Pengrajin</th><th>Harga Sample</th><th>Harga Revisi</th><th>Nama Item</th><th>Jumlah</th><th>Ukuran</th><th>Rangka</th><th>Anyam</th><th>Finishing</th><th>Berat (KG)</th><th>Keterangan</th><th id="thAksi">Aksi</th>
+            <th>No</th><th>Foto</th><th>No. SPKS</th><th>PO / Buyer</th><th>Tgl SPKS</th><th>Tgl Selesai</th><th>Pengrajin</th><th>Harga Sample</th><th>Harga Revisi</th><th>Nama Item</th><th>Jumlah</th><th>Ukuran</th><th>Rangka</th><th>Anyam/Dekor/Bebed</th><th>Finishing</th><th>Berat Rangka (KG)</th><th>Berat Anyam (KG)</th><th>Berat Total (KG)</th><th>Keterangan</th><th id="thAksi">Aksi</th>
           </tr>
         </thead>
         <tbody id="tabelSimpan"></tbody>
@@ -412,6 +459,14 @@
     let currentPage = 1;
     const rowsPerPage = 10;
 
+    // ===== FUNGSI HITUNG BERAT TOTAL OTOMATIS =====
+    function hitungBeratTotal() {
+      const r = parseFloat(document.getElementById('beratRangka').value) || 0;
+      const a = parseFloat(document.getElementById('beratAnyam').value) || 0;
+      const total = r + a;
+      document.getElementById('beratTotal').value = total > 0 ? total.toFixed(2) : '';
+    }
+
     // ===== HELPER FORMATTING OTOMATIS BER-TITIK (RIBUAN / JUTAAN) =====
     function formatRupiahFormat(angka) {
       if (!angka && angka !== 0) return '';
@@ -468,12 +523,14 @@
       zoomBox.style.display = 'none';
     }
 
+    // ===== FUNGSI CEK & PROSES LOGIN (DENGAN REMEMBER ME) =====
     function cekStatusLogin() {
-      const loggedRole = sessionStorage.getItem('spks_logged_role');
-      const loggedUser = sessionStorage.getItem('spks_logged_user');
+      // Cek apakah ada data tersimpan di localStorage (Ingat Saya) atau sessionStorage
+      let loggedRole = localStorage.getItem('spks_logged_role') || sessionStorage.getItem('spks_logged_role');
+      let loggedUser = localStorage.getItem('spks_logged_user') || sessionStorage.getItem('spks_logged_user');
       const overlay = document.getElementById('loginOverlay');
       
-      if (loggedRole) {
+      if (loggedRole && loggedUser) {
         overlay.style.display = 'none';
         document.getElementById('userInfoBadge').innerText = `[ Login: ${loggedUser} (${loggedRole.toUpperCase()}) ]`;
         terapkanAksesRole(loggedRole);
@@ -486,11 +543,17 @@
       event.preventDefault();
       const user = document.getElementById('username').value.trim();
       const pass = document.getElementById('password').value.trim();
+      const rememberMe = document.getElementById('rememberMe').checked;
       const foundUser = USERS.find(u => u.username.toLowerCase() === user.toLowerCase() && u.password === pass);
 
       if (foundUser) {
-        sessionStorage.setItem('spks_logged_role', foundUser.role);
-        sessionStorage.setItem('spks_logged_user', foundUser.username);
+        if (rememberMe) {
+          localStorage.setItem('spks_logged_role', foundUser.role);
+          localStorage.setItem('spks_logged_user', foundUser.username);
+        } else {
+          sessionStorage.setItem('spks_logged_role', foundUser.role);
+          sessionStorage.setItem('spks_logged_user', foundUser.username);
+        }
         document.getElementById('loginError').style.display = 'none';
         cekStatusLogin();
         tampilkanData();
@@ -500,9 +563,15 @@
     }
 
     function logout() {
+      localStorage.removeItem('spks_logged_role');
+      localStorage.removeItem('spks_logged_user');
       sessionStorage.removeItem('spks_logged_role');
       sessionStorage.removeItem('spks_logged_user');
       cekStatusLogin();
+    }
+
+    function getLoggedRole() {
+      return localStorage.getItem('spks_logged_role') || sessionStorage.getItem('spks_logged_role');
     }
 
     function terapkanAksesRole(role) {
@@ -552,7 +621,7 @@
 
     // ===== CRUD SUPABASE DATABASE =====
     async function simpanData() {
-      if (sessionStorage.getItem('spks_logged_role') === 'user2') return;
+      if (getLoggedRole() === 'user2') return;
       if (!supabaseClient) { alert("Konfigurasi Supabase URL & Key belum terpasang!"); return; }
 
       const payload = {
@@ -569,7 +638,8 @@
         material1: document.getElementById('material1').value,
         material2: document.getElementById('material2').value,
         material3: document.getElementById('material3').value,
-        berat: document.getElementById('berat').value ? parseFloat(document.getElementById('berat').value) : null,
+        berat_rangka: document.getElementById('beratRangka').value ? parseFloat(document.getElementById('beratRangka').value) : null,
+        berat_anyam: document.getElementById('beratAnyam').value ? parseFloat(document.getElementById('beratAnyam').value) : null,
         keterangan: document.getElementById('keterangan').value,
         gambar: base64Gambar
       };
@@ -608,35 +678,32 @@
       tampilkanData();
     }
 
-    // ===== DATABASE LOAD OPTIMIZED: SERVER-SIDE SEARCH + PAGINATION =====
+    // ===== DATABASE LOAD OPTIMIZED =====
     async function tampilkanData() {
       const tbody = document.getElementById('tabelSimpan');
-      const currentRole = sessionStorage.getItem('spks_logged_role');
+      const currentRole = getLoggedRole();
       const keyword = (document.getElementById('searchInput').value || '').trim();
 
       if (!supabaseClient) {
-        tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:#64748b;">Silakan masukkan URL dan Key Supabase pada file index.html terlebih dahulu.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="20" style="text-align:center; color:#64748b;">Silakan masukkan URL dan Key Supabase pada file index.html terlebih dahulu.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:#64748b;">Memuat data...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="20" style="text-align:center; color:#64748b;">Memuat data...</td></tr>`;
 
       try {
         const from = (currentPage - 1) * rowsPerPage;
         const to = from + rowsPerPage - 1;
 
-        // Hanya ambil 10 baris yang sedang ditampilkan.
-        // Hindari SELECT * agar payload dari database sekecil mungkin.
         let query = supabaseClient
           .from('spks')
           .select(
-            'id,no_spks,po_buyer,tgl_spks,tgl_selesai_spks,pengrajin,harga_sample,harga_produksi,nama_item,jumlah_item,ukuran,material1,material2,material3,berat,keterangan,gambar',
+            'id,no_spks,po_buyer,tgl_spks,tgl_selesai_spks,pengrajin,harga_sample,harga_produksi,nama_item,jumlah_item,ukuran,material1,material2,material3,berat_rangka,berat_anyam,keterangan,gambar',
             { count: 'exact' }
           )
           .order('id', { ascending: false })
           .range(from, to);
 
-        // Pencarian dilakukan di PostgreSQL, bukan setelah semua data di-download.
         if (keyword) {
           const safeKeyword = keyword.replace(/,/g, ' ');
           query = query.or(
@@ -659,7 +726,7 @@
         tbody.innerHTML = '';
 
         if (!pageData || pageData.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:#64748b;">${keyword ? 'Data tidak ditemukan' : 'Belum ada data tersimpan di Cloud Database'}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="20" style="text-align:center; color:#64748b;">${keyword ? 'Data tidak ditemukan' : 'Belum ada data tersimpan di Cloud Database'}</td></tr>`;
           document.getElementById('paginationInfo').innerText = 'Menampilkan 0 dari 0 data';
           document.getElementById('btnPrev').disabled = true;
           document.getElementById('btnNext').disabled = true;
@@ -678,6 +745,11 @@
               </td>`
             : '';
 
+          // Calculate Total Weight dynamically
+          const bRangka = parseFloat(item.berat_rangka) || 0;
+          const bAnyam = parseFloat(item.berat_anyam) || 0;
+          const bTotal = bRangka + bAnyam;
+
           tbody.innerHTML += `<tr>
             <td>${from + index + 1}</td>
             <td>${fotoTag}</td>
@@ -694,7 +766,9 @@
             <td>${item.material1 || '-'}</td>
             <td>${item.material2 || '-'}</td>
             <td>${item.material3 || '-'}</td>
-            <td>${item.berat ? item.berat + ' KG' : '-'}</td>
+            <td>${item.berat_rangka ? item.berat_rangka + ' KG' : '-'}</td>
+            <td>${item.berat_anyam ? item.berat_anyam + ' KG' : '-'}</td>
+            <td><b>${bTotal > 0 ? bTotal.toFixed(2) + ' KG' : '-'}</b></td>
             <td>${item.keterangan || '-'}</td>
             ${tdAksi}
           </tr>`;
@@ -709,11 +783,12 @@
 
       } catch (error) {
         console.error("Gagal memuat data:", error);
-        tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:red;">Gagal memuat dari Cloud: ${error.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="20" style="text-align:center; color:red;">Gagal memuat dari Cloud: ${error.message}</td></tr>`;
         document.getElementById('btnPrev').disabled = true;
         document.getElementById('btnNext').disabled = true;
       }
     }
+
     function nextPage() {
       if (!document.getElementById('btnNext').disabled) {
         currentPage++;
@@ -729,11 +804,11 @@
     }
 
     async function editData(id) {
-      if (sessionStorage.getItem('spks_logged_role') === 'user2') return;
+      if (getLoggedRole() === 'user2') return;
 
       const { data, error } = await supabaseClient
         .from('spks')
-        .select('id,no_spks,po_buyer,tgl_spks,tgl_selesai_spks,pengrajin,harga_sample,harga_produksi,nama_item,jumlah_item,ukuran,material1,material2,material3,berat,keterangan,gambar')
+        .select('id,no_spks,po_buyer,tgl_spks,tgl_selesai_spks,pengrajin,harga_sample,harga_produksi,nama_item,jumlah_item,ukuran,material1,material2,material3,berat_rangka,berat_anyam,keterangan,gambar')
         .eq('id', id)
         .single();
       if (error || !data) return;
@@ -752,8 +827,11 @@
       document.getElementById('material1').value = data.material1 || '';
       document.getElementById('material2').value = data.material2 || '';
       document.getElementById('material3').value = data.material3 || '';
-      document.getElementById('berat').value = data.berat || '';
+      document.getElementById('beratRangka').value = data.berat_rangka || '';
+      document.getElementById('beratAnyam').value = data.berat_anyam || '';
       document.getElementById('keterangan').value = data.keterangan || '';
+
+      hitungBeratTotal();
 
       if (data.gambar) {
         base64Gambar = data.gambar;
@@ -771,7 +849,7 @@
     }
 
     async function hapusData(id) {
-      if (sessionStorage.getItem('spks_logged_role') === 'user2') return;
+      if (getLoggedRole() === 'user2') return;
 
       if (confirm("Yakin ingin menghapus data ini dari Cloud?")) {
         await supabaseClient.from('spks').delete().eq('id', id);
@@ -780,7 +858,7 @@
     }
 
     async function hapusSemuaData() {
-      if (sessionStorage.getItem('spks_logged_role') !== 'admin') {
+      if (getLoggedRole() !== 'admin') {
         alert("Akses ditolak: Hanya Admin yang dapat menghapus seluruh data!");
         return;
       }
@@ -850,9 +928,11 @@
         { header: 'Jumlah', key: 'jumlahItem', width: 10 },
         { header: 'Ukuran', key: 'ukuran', width: 15 },
         { header: 'Rangka', key: 'material1', width: 15 },
-        { header: 'Anyam', key: 'material2', width: 15 },
+        { header: 'Anyam/Dekor/Bebed', key: 'material2', width: 15 },
         { header: 'Finishing', key: 'material3', width: 15 },
-        { header: 'Berat (KG)', key: 'berat', width: 12 },
+        { header: 'Berat Rangka (KG)', key: 'beratRangka', width: 18 },
+        { header: 'Berat Anyam (KG)', key: 'beratAnyam', width: 18 },
+        { header: 'Berat Total (KG)', key: 'beratTotal', width: 18 },
         { header: 'Keterangan', key: 'keterangan', width: 25 }
       ];
 
@@ -860,6 +940,10 @@
       ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF16A34A' } };
 
       listData.forEach((item, index) => {
+        const bRangka = parseFloat(item.berat_rangka) || 0;
+        const bAnyam = parseFloat(item.berat_anyam) || 0;
+        const bTotal = bRangka + bAnyam;
+
         ws.addRow({
           no: index + 1,
           noSpks: item.no_spks,
@@ -875,7 +959,9 @@
           material1: item.material1,
           material2: item.material2,
           material3: item.material3,
-          berat: item.berat ? Number(item.berat) : "",
+          beratRangka: item.berat_rangka ? Number(item.berat_rangka) : "",
+          beratAnyam: item.berat_anyam ? Number(item.berat_anyam) : "",
+          beratTotal: bTotal > 0 ? Number(bTotal.toFixed(2)) : "",
           keterangan: item.keterangan
         });
       });
@@ -885,7 +971,7 @@
     }
 
     function importExcelData(event) {
-      if (sessionStorage.getItem('spks_logged_role') === 'user2') return;
+      if (getLoggedRole() === 'user2') return;
 
       const file = event.target.files[0];
       if (!file) return;
@@ -924,9 +1010,10 @@
             jumlah_item: getVal(row, "Jumlah") ? parseInt(getVal(row, "Jumlah")) : null,
             ukuran: String(getVal(row, "Ukuran") || ""),
             material1: String(getVal(row, "Rangka") || ""),
-            material2: String(getVal(row, "Anyam") || ""),
+            material2: String(getVal(row, "Anyam/Dekor/Bebed") || ""),
             material3: String(getVal(row, "Finishing") || ""),
-            berat: getVal(row, "Berat (KG)", "Berat") ? parseFloat(getVal(row, "Berat (KG)", "Berat")) : null,
+            berat_rangka: getVal(row, "Berat Rangka (KG)", "Berat Rangka") ? parseFloat(getVal(row, "Berat Rangka (KG)", "Berat Rangka")) : null,
+            berat_anyam: getVal(row, "Berat Anyam (KG)", "Berat Anyam") ? parseFloat(getVal(row, "Berat Anyam (KG)", "Berat Anyam")) : null,
             keterangan: String(getVal(row, "Keterangan") || "")
           })).filter(item => item.no_spks || item.nama_item || item.po_buyer);
 
@@ -961,7 +1048,9 @@
       document.getElementById('material1').value = '';
       document.getElementById('material2').value = '';
       document.getElementById('material3').value = '';
-      document.getElementById('berat').value = '';
+      document.getElementById('beratRangka').value = '';
+      document.getElementById('beratAnyam').value = '';
+      document.getElementById('beratTotal').value = '';
       document.getElementById('keterangan').value = '';
       hapusGambar();
       document.getElementById('btnSimpan').innerText = 'SIMPAN CLOUD';
