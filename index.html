@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SPKS Cloud Database">
+  <link rel="preconnect" href="https://gybumgaubajrhsytnatm.supabase.co">
   <title>SPKS - Surat Perintah Kerja Sample</title>
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -336,7 +338,7 @@
       </div>
     </div>
     <div class="search-box">
-      <input type="text" id="searchInput" onkeyup="resetPageAndRender()" placeholder="Cari No. SPKS, Buyer, Pengrajin, Nama Item...">
+      <input type="text" id="searchInput" oninput="debouncedSearch()" placeholder="Cari No. SPKS, Buyer, Pengrajin, Nama Item...">
     </div>
     <div class="table-responsive">
       <table class="history-table">
@@ -593,114 +595,147 @@
       }
     }
 
+    let searchTimer = null;
+    function debouncedSearch() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        resetPageAndRender();
+      }, 300);
+    }
+
     function resetPageAndRender() {
       currentPage = 1;
       tampilkanData();
     }
 
+    // ===== DATABASE LOAD OPTIMIZED: SERVER-SIDE SEARCH + PAGINATION =====
     async function tampilkanData() {
       const tbody = document.getElementById('tabelSimpan');
       const currentRole = sessionStorage.getItem('spks_logged_role');
-      const keyword = (document.getElementById('searchInput').value || '').toLowerCase();
+      const keyword = (document.getElementById('searchInput').value || '').trim();
 
       if (!supabaseClient) {
         tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:#64748b;">Silakan masukkan URL dan Key Supabase pada file index.html terlebih dahulu.</td></tr>`;
         return;
       }
 
-      const { data: listData, error } = await supabaseClient.from('spks').select('*').order('id', { ascending: false });
+      tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:#64748b;">Memuat data...</td></tr>`;
 
-      if (error) {
+      try {
+        const from = (currentPage - 1) * rowsPerPage;
+        const to = from + rowsPerPage - 1;
+
+        // Hanya ambil 10 baris yang sedang ditampilkan.
+        // Hindari SELECT * agar payload dari database sekecil mungkin.
+        let query = supabaseClient
+          .from('spks')
+          .select(
+            'id,no_spks,po_buyer,tgl_spks,tgl_selesai_spks,pengrajin,harga_sample,harga_produksi,nama_item,jumlah_item,ukuran,material1,material2,material3,berat,keterangan,gambar',
+            { count: 'exact' }
+          )
+          .order('id', { ascending: false })
+          .range(from, to);
+
+        // Pencarian dilakukan di PostgreSQL, bukan setelah semua data di-download.
+        if (keyword) {
+          const safeKeyword = keyword.replace(/,/g, ' ');
+          query = query.or(
+            `no_spks.ilike.%${safeKeyword}%,po_buyer.ilike.%${safeKeyword}%,pengrajin.ilike.%${safeKeyword}%,nama_item.ilike.%${safeKeyword}%`
+          );
+        }
+
+        const { data: pageData, error, count } = await query;
+
+        if (error) throw error;
+
+        const totalItems = count || 0;
+        const totalPages = Math.max(1, Math.ceil(totalItems / rowsPerPage));
+
+        if (currentPage > totalPages) {
+          currentPage = totalPages;
+          return tampilkanData();
+        }
+
+        tbody.innerHTML = '';
+
+        if (!pageData || pageData.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:#64748b;">${keyword ? 'Data tidak ditemukan' : 'Belum ada data tersimpan di Cloud Database'}</td></tr>`;
+          document.getElementById('paginationInfo').innerText = 'Menampilkan 0 dari 0 data';
+          document.getElementById('btnPrev').disabled = true;
+          document.getElementById('btnNext').disabled = true;
+          return;
+        }
+
+        pageData.forEach((item, index) => {
+          const fotoTag = item.gambar
+            ? `<img src="${item.gambar}" loading="lazy" decoding="async" style="width:32px; height:32px; object-fit:cover; cursor:pointer; border-radius:3px;" onmouseover="showZoom(event, this.src)" onmousemove="moveZoom(event)" onmouseout="hideZoom()">`
+            : '-';
+
+          const tdAksi = (currentRole !== 'user2')
+            ? `<td>
+                <button class="btn-action" style="background-color:#2563eb;" onclick="editData(${item.id})">Edit</button>
+                <button class="btn-action" style="background-color:#dc2626;" onclick="hapusData(${item.id})">Hapus</button>
+              </td>`
+            : '';
+
+          tbody.innerHTML += `<tr>
+            <td>${from + index + 1}</td>
+            <td>${fotoTag}</td>
+            <td><b>${item.no_spks || '-'}</b></td>
+            <td>${item.po_buyer || '-'}</td>
+            <td>${item.tgl_spks || '-'}</td>
+            <td>${item.tgl_selesai_spks || '-'}</td>
+            <td>${item.pengrajin || '-'}</td>
+            <td>${item.harga_sample ? 'Rp ' + formatRupiahFormat(item.harga_sample) : '-'}</td>
+            <td>${item.harga_produksi ? 'Rp ' + formatRupiahFormat(item.harga_produksi) : '-'}</td>
+            <td>${item.nama_item || '-'}</td>
+            <td>${item.jumlah_item || '-'}</td>
+            <td>${item.ukuran || '-'}</td>
+            <td>${item.material1 || '-'}</td>
+            <td>${item.material2 || '-'}</td>
+            <td>${item.material3 || '-'}</td>
+            <td>${item.berat ? item.berat + ' KG' : '-'}</td>
+            <td>${item.keterangan || '-'}</td>
+            ${tdAksi}
+          </tr>`;
+        });
+
+        const shownStart = from + 1;
+        const shownEnd = from + pageData.length;
+        document.getElementById('paginationInfo').innerText =
+          `Menampilkan ${shownStart}-${shownEnd} dari ${totalItems} data (Halaman ${currentPage} / ${totalPages})`;
+        document.getElementById('btnPrev').disabled = currentPage === 1;
+        document.getElementById('btnNext').disabled = currentPage >= totalPages;
+
+      } catch (error) {
+        console.error("Gagal memuat data:", error);
         tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:red;">Gagal memuat dari Cloud: ${error.message}</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = '';
-      if (!listData || listData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:#64748b;">Belum ada data tersimpan di Cloud Database</td></tr>`;
-        document.getElementById('paginationInfo').innerText = 'Menampilkan 0 dari 0 data';
         document.getElementById('btnPrev').disabled = true;
         document.getElementById('btnNext').disabled = true;
-        return;
       }
-
-      // Filter Data Berdasarkan Kata Kunci Pencarian
-      const filteredData = listData.filter(item => {
-        const itemString = `${item.no_spks} ${item.po_buyer} ${item.nama_item} ${item.pengrajin}`.toLowerCase();
-        return !keyword || itemString.includes(keyword);
-      });
-
-      if (filteredData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:#64748b;">Data tidak ditemukan</td></tr>`;
-        document.getElementById('paginationInfo').innerText = 'Menampilkan 0 dari 0 data';
-        document.getElementById('btnPrev').disabled = true;
-        document.getElementById('btnNext').disabled = true;
-        return;
-      }
-
-      // Hitung Batas Paginasi (10 Baris per Halaman)
-      const totalItems = filteredData.length;
-      const totalPages = Math.ceil(totalItems / rowsPerPage);
-
-      if (currentPage > totalPages) currentPage = totalPages;
-      if (currentPage < 1) currentPage = 1;
-
-      const startIndex = (currentPage - 1) * rowsPerPage;
-      const endIndex = Math.min(startIndex + rowsPerPage, totalItems);
-      const pageData = filteredData.slice(startIndex, endIndex);
-
-      pageData.forEach((item, index) => {
-        const fotoTag = item.gambar 
-          ? `<img src="${item.gambar}" style="width:32px; height:32px; object-fit:cover; cursor:pointer; border-radius:3px;" onmouseover="showZoom(event, this.src)" onmousemove="moveZoom(event)" onmouseout="hideZoom()">` 
-          : '-';
-        
-        let tdAksi = (currentRole !== 'user2') ? `<td>
-          <button class="btn-action" style="background-color:#2563eb;" onclick="editData(${item.id})">Edit</button>
-          <button class="btn-action" style="background-color:#dc2626;" onclick="hapusData(${item.id})">Hapus</button>
-        </td>` : '';
-
-        tbody.innerHTML += `<tr>
-          <td>${startIndex + index + 1}</td>
-          <td>${fotoTag}</td>
-          <td><b>${item.no_spks || '-'}</b></td>
-          <td>${item.po_buyer || '-'}</td>
-          <td>${item.tgl_spks || '-'}</td>
-          <td>${item.tgl_selesai_spks || '-'}</td>
-          <td>${item.pengrajin || '-'}</td>
-          <td>${item.harga_sample ? 'Rp ' + formatRupiahFormat(item.harga_sample) : '-'}</td>
-          <td>${item.harga_produksi ? 'Rp ' + formatRupiahFormat(item.harga_produksi) : '-'}</td>
-          <td>${item.nama_item || '-'}</td>
-          <td>${item.jumlah_item || '-'}</td>
-          <td>${item.ukuran || '-'}</td>
-          <td>${item.material1 || '-'}</td>
-          <td>${item.material2 || '-'}</td>
-          <td>${item.material3 || '-'}</td>
-          <td>${item.berat ? item.berat + ' KG' : '-'}</td>
-          <td>${item.keterangan || '-'}</td>
-          ${tdAksi}
-        </tr>`;
-      });
-
-      // Update Tampilan Status & Tombol Paginasi
-      document.getElementById('paginationInfo').innerText = `Menampilkan ${startIndex + 1}-${endIndex} dari ${totalItems} data (Halaman ${currentPage} / ${totalPages})`;
-      document.getElementById('btnPrev').disabled = (currentPage === 1);
-      document.getElementById('btnNext').disabled = (currentPage === totalPages);
     }
-
     function nextPage() {
-      currentPage++;
-      tampilkanData();
+      if (!document.getElementById('btnNext').disabled) {
+        currentPage++;
+        tampilkanData();
+      }
     }
 
     function prevPage() {
-      currentPage--;
-      tampilkanData();
+      if (!document.getElementById('btnPrev').disabled && currentPage > 1) {
+        currentPage--;
+        tampilkanData();
+      }
     }
 
     async function editData(id) {
       if (sessionStorage.getItem('spks_logged_role') === 'user2') return;
 
-      const { data, error } = await supabaseClient.from('spks').select('*').eq('id', id).single();
+      const { data, error } = await supabaseClient
+        .from('spks')
+        .select('id,no_spks,po_buyer,tgl_spks,tgl_selesai_spks,pengrajin,harga_sample,harga_produksi,nama_item,jumlah_item,ukuran,material1,material2,material3,berat,keterangan,gambar')
+        .eq('id', id)
+        .single();
       if (error || !data) return;
 
       editId = id;
