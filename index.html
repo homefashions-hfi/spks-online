@@ -294,9 +294,9 @@
         <tr><td class="label-col">Nama Item</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="namaItem"></td></tr>
         <tr><td class="label-col">Jumlah Item</td><td class="colon-col">:</td><td class="input-col"><input type="number" id="jumlahItem"></td></tr>
         <tr><td class="label-col">Ukuran</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="ukuran"></td></tr>
-        <tr><td class="label-col">Material 1</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material1"></td></tr>
-        <tr><td class="label-col">Material 2</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material2"></td></tr>
-        <tr><td class="label-col">Material 3</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material3"></td></tr>
+        <tr><td class="label-col">Rangka</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material1"></td></tr>
+        <tr><td class="label-col">Anyam</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material2"></td></tr>
+        <tr><td class="label-col">Finishing</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material3"></td></tr>
         <tr><td class="label-col">Berat ( KG )</td><td class="colon-col">:</td><td class="input-col"><input type="number" step="0.01" id="berat" placeholder="0"></td></tr>
         <tr><td class="label-col">Keterangan</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="keterangan"></td></tr>
       </table>
@@ -344,7 +344,7 @@
       <table class="history-table">
         <thead>
           <tr id="headerRow">
-            <th>No</th><th>Foto</th><th>No. SPKS</th><th>PO / Buyer</th><th>Tgl SPKS</th><th>Tgl Selesai</th><th>Pengrajin</th><th>Harga Sample</th><th>Harga Revisi</th><th>Nama Item</th><th>Jumlah</th><th>Ukuran</th><th>Material 1</th><th>Material 2</th><th>Material 3</th><th>Berat (KG)</th><th>Keterangan</th><th id="thAksi">Aksi</th>
+            <th>No</th><th>Foto</th><th>No. SPKS</th><th>PO / Buyer</th><th>Tgl SPKS</th><th>Tgl Selesai</th><th>Pengrajin</th><th>Harga Sample</th><th>Harga Revisi</th><th>Nama Item</th><th>Jumlah</th><th>Ukuran</th><th>Rangka</th><th>Anyam</th><th>Finishing</th><th>Berat (KG)</th><th>Keterangan</th><th id="thAksi">Aksi</th>
           </tr>
         </thead>
         <tbody id="tabelSimpan"></tbody>
@@ -849,9 +849,9 @@
         { header: 'Nama Item', key: 'namaItem', width: 25 },
         { header: 'Jumlah', key: 'jumlahItem', width: 10 },
         { header: 'Ukuran', key: 'ukuran', width: 15 },
-        { header: 'Material 1', key: 'material1', width: 15 },
-        { header: 'Material 2', key: 'material2', width: 15 },
-        { header: 'Material 3', key: 'material3', width: 15 },
+        { header: 'Rangka', key: 'material1', width: 15 },
+        { header: 'Anyam', key: 'material2', width: 15 },
+        { header: 'Finishing', key: 'material3', width: 15 },
         { header: 'Berat (KG)', key: 'berat', width: 12 },
         { header: 'Keterangan', key: 'keterangan', width: 25 }
       ];
@@ -923,9 +923,9 @@
             nama_item: String(getVal(row, "Nama Item") || ""),
             jumlah_item: getVal(row, "Jumlah") ? parseInt(getVal(row, "Jumlah")) : null,
             ukuran: String(getVal(row, "Ukuran") || ""),
-            material1: String(getVal(row, "Material 1") || ""),
-            material2: String(getVal(row, "Material 2") || ""),
-            material3: String(getVal(row, "Material 3") || ""),
+            material1: String(getVal(row, "Rangka") || ""),
+            material2: String(getVal(row, "Anyam") || ""),
+            material3: String(getVal(row, "Finishing") || ""),
             berat: getVal(row, "Berat (KG)", "Berat") ? parseFloat(getVal(row, "Berat (KG)", "Berat")) : null,
             keterangan: String(getVal(row, "Keterangan") || "")
           })).filter(item => item.no_spks || item.nama_item || item.po_buyer);
