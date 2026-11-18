@@ -3,11 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="SPKS Cloud Database">
-  <link rel="preconnect" href="https://gybumgaubajrhsytnatm.supabase.co">
-  <title>SPKS - Surat Perintah Kerja Sample</title>
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <title>SPKS - Surat Perintah Kerja Sample (IndexedDB)</title>
   <!-- ExcelJS & FileSaver for Advanced Excel Styling -->
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
@@ -16,9 +12,7 @@
   <style>
     /* ===== PALET WARNA & VARIABEL CSS ===== */
     :root {
-      /* PENGATURAN BACKGROUND CUSTOM */
-      --bg-body: url('background.jpg') center/cover no-repeat fixed #f1f5f9; 
-      
+      --bg-body: url('background.jpg') center/cover no-repeat fixed #f1f5f9;
       --bg-card: rgba(255, 255, 255, 0.95);
       --bg-subcard: rgba(248, 250, 252, 0.95);
       --bg-label: #f1f5f9;
@@ -37,9 +31,7 @@
     }
 
     [data-theme="dark"] {
-      /* PENGATURAN BACKGROUND CUSTOM MODE GELAP */
-      --bg-body: url('background-dark.jpg') center/cover no-repeat fixed #0f172a; 
-      
+      --bg-body: url('background-dark.jpg') center/cover no-repeat fixed #0f172a;
       --bg-card: rgba(30, 41, 59, 0.95);
       --bg-subcard: rgba(51, 65, 85, 0.95);
       --bg-label: #334155;
@@ -59,7 +51,6 @@
 
     * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; transition: background-color 0.2s, color 0.2s; }
     
-    /* Body & Layout Utama */
     body { 
       background: var(--bg-body); 
       color: var(--text-main); 
@@ -71,7 +62,6 @@
       min-height: 100vh; 
     }
 
-    /* Container Full Width */
     .container { 
       width: 100% !important; 
       max-width: 100% !important; 
@@ -83,7 +73,6 @@
       backdrop-filter: blur(4px);
     }
 
-    /* Teks Input */
     .container input[type="text"],
     .container input[type="number"],
     .container input[type="date"] {
@@ -98,7 +87,6 @@
     .spks-no-box .label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
     .spks-no-box input { font-size: 14px; font-weight: 800; text-align: center; width: 130px; border: 1.5px solid var(--border-main); border-radius: 4px; padding: 3px 6px; background-color: var(--bg-subcard); color: var(--text-input) !important; outline: none; }
     
-    /* Tombol Tema */
     .theme-toggle-btn {
       background-color: var(--bg-label);
       color: var(--text-main);
@@ -137,7 +125,6 @@
     
     .note { color: var(--note-text); font-size: 11px; font-weight: 900; margin-top: 6px; line-height: 1.4; text-align: left; background-color: var(--note-bg); padding: 6px 10px; border-radius: 4px; border: 1px solid var(--note-border); }
     
-    /* Footer & Tanda Tangan */
     .footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 33px; gap: 15px; flex-wrap: wrap; }
     .signature-box { text-align: center; width: 180px; padding-top: 65px; }
     .signature-line { border-bottom: 2px solid var(--border-dark); margin-bottom: 6px; }
@@ -150,7 +137,6 @@
     .btn-import { background-color: #0284c7; }
     .btn-cancel { background-color: #475569 !important; }
     
-    /* Tabel Data Tersimpan */
     .history-section { width: 100% !important; max-width: 100% !important; margin-top: 15px; background: var(--bg-card); padding: 16px; border-radius: 8px; border: 2px solid var(--border-main); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); backdrop-filter: blur(4px); }
     .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
     .history-header h3 { margin: 0; font-size: 14.5px; font-weight: 800; color: var(--text-main); }
@@ -159,33 +145,28 @@
     .search-box input { width: 100%; padding: 7px 12px; font-size: 12.5px; border: 1.5px solid var(--border-main); border-radius: 4px; outline: none; background: var(--input-bg); color: var(--text-main); }
     
     .table-responsive { overflow-x: auto; }
-    .history-table { width: 100%; border-collapse: collapse; font-size: 11.5px; min-width: 1050px; color: var(--text-main); }
+    .history-table { width: 100%; border-collapse: collapse; font-size: 11.5px; min-width: 950px; color: var(--text-main); }
     .history-table th, .history-table td { border: 1px solid var(--border-main); padding: 5px 8px; text-align: left; }
     .history-table th { background-color: var(--bg-th); color: var(--text-main); font-weight: 800; white-space: nowrap; }
     .btn-action { cursor: pointer; color: #fff; border: none; padding: 3px 6px; border-radius: 3px; font-size: 10.5px; font-weight: 700; }
     
-    /* Pagination */
     .pagination-container { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border-main); }
     .pagination-info { font-size: 12px; font-weight: 700; color: var(--text-muted); }
     .pagination-buttons { display: flex; gap: 6px; }
     .btn-page { background-color: var(--border-main); color: #ffffff; border: none; padding: 5px 12px; font-size: 11.5px; font-weight: 700; border-radius: 4px; cursor: pointer; }
     .btn-page:disabled { background-color: #cbd5e1; cursor: not-allowed; }
 
-    /* Login Modal */
     .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.95); display: flex; justify-content: center; align-items: center; z-index: 9999; }
     .login-card { background-color: var(--bg-card); padding: 30px 25px; border-radius: 8px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center; border: 1px solid var(--border-main); }
     .login-card h2 { margin-top: 0; margin-bottom: 20px; font-size: 20px; color: var(--text-main); }
     .login-field { margin-bottom: 15px; text-align: left; }
     .login-field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; color: var(--text-muted); }
-    .login-field input[type="text"], .login-field input[type="password"] { width: 100%; padding: 8px 10px; font-size: 13px; border: 1.5px solid var(--border-main); border-radius: 4px; outline: none; background: var(--input-bg); color: var(--text-main); }
-    .login-remember { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--text-main); margin-bottom: 15px; cursor: pointer; }
-    .login-remember input { cursor: pointer; }
+    .login-field input { width: 100%; padding: 8px 10px; font-size: 13px; border: 1.5px solid var(--border-main); border-radius: 4px; outline: none; background: var(--input-bg); color: var(--text-main); }
     .login-error { color: #dc2626; font-size: 11.5px; margin-bottom: 12px; display: none; font-weight: 600; }
     
     .user-info-badge { font-size: 11px; font-weight: bold; color: #2563eb; margin-top: 2px; display: block; }
     .btn-logout { background-color: #dc2626; color: #fff; border: none; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 4px; }
 
-    /* Pop-up Zoom Gambar */
     #imgZoomPreview {
       display: none;
       position: fixed;
@@ -207,27 +188,6 @@
       border-radius: 4px;
     }
 
-    /* Inline flex untuk baris gabungan */
-    .inline-row {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      width: 100%;
-    }
-    .inline-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      flex: 1;
-    }
-    .inline-item label {
-      white-space: nowrap;
-      font-weight: 700;
-      font-size: 11.5px;
-      color: var(--text-main);
-    }
-
-    /* PRINT STYLES */
     @media print {
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; }
@@ -265,10 +225,7 @@
           <label for="password">Password</label>
           <input type="password" id="password" required>
         </div>
-        <label class="login-remember">
-          <input type="checkbox" id="rememberMe"> Ingat Saya
-        </label>
-        <button type="submit" class="btn" style="width: 100%; margin-top: 5px;">MASUK</button>
+        <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">MASUK</button>
       </form>
     </div>
   </div>
@@ -319,32 +276,10 @@
         <tr><td class="label-col">Nama Item</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="namaItem"></td></tr>
         <tr><td class="label-col">Jumlah Item</td><td class="colon-col">:</td><td class="input-col"><input type="number" id="jumlahItem"></td></tr>
         <tr><td class="label-col">Ukuran</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="ukuran"></td></tr>
-        <tr><td class="label-col">material1</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material1"></td></tr>
-        <tr><td class="label-col">material2</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material2"></td></tr>
-        <tr><td class="label-col">material3</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material3"></td></tr>
-        
-        <!-- BARIS BERAT material1, BERAT material2, DAN BERAT TOTAL DIBUAT SATU BARIS -->
-        <tr>
-          <td class="label-col">Rincian Berat ( KG )</td>
-          <td class="colon-col">:</td>
-          <td class="input-col">
-            <div class="inline-row">
-              <div class="inline-item">
-                <label for="beratmaterial1">material1:</label>
-                <input type="number" step="0.01" id="beratmaterial1" placeholder="0" oninput="hitungBeratTotal()">
-              </div>
-              <div class="inline-item">
-                <label for="beratmaterial2">material2:</label>
-                <input type="number" step="0.01" id="beratmaterial2" placeholder="0" oninput="hitungBeratTotal()">
-              </div>
-              <div class="inline-item">
-                <label for="beratTotal" style="color: #0284c7;">Total:</label>
-                <input type="number" step="0.01" id="beratTotal" placeholder="0" readonly style="background-color: var(--bg-label); font-weight: bold;">
-              </div>
-            </div>
-          </td>
-        </tr>
-
+        <tr><td class="label-col">Material 1</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material1"></td></tr>
+        <tr><td class="label-col">Material 2</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material2"></td></tr>
+        <tr><td class="label-col">Material 3</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="material3"></td></tr>
+        <tr><td class="label-col">Berat ( KG )</td><td class="colon-col">:</td><td class="input-col"><input type="number" step="0.01" id="berat" placeholder="0"></td></tr>
         <tr><td class="label-col">Keterangan</td><td class="colon-col">:</td><td class="input-col"><input type="text" id="keterangan"></td></tr>
       </table>
 
@@ -364,7 +299,7 @@
     <div class="footer">
       <div class="signature-box"><div class="signature-line"></div><div class="signature-text">Pembuat SPKS</div></div>
       <div class="button-group">
-        <button class="btn" id="btnSimpan" onclick="simpanData()">SIMPAN CLOUD</button>
+        <button class="btn" id="btnSimpan" onclick="simpanData()">SIMPAN LOKAL</button>
         <button class="btn btn-cancel" id="btnBatal" onclick="batalEdit()" style="display:none;">BATAL EDIT</button>
         <button class="btn btn-excel" onclick="unduhExcelLangsung()">UNDUH EXCEL</button>
         <button class="btn" style="background-color: #0284c7;" onclick="window.print()">CETAK / PDF</button>
@@ -373,10 +308,10 @@
     </div>
   </div>
 
-  <!-- Table Data Cloud -->
+  <!-- Table Data Lokal -->
   <div class="history-section">
     <div class="history-header">
-      <h3>Daftar Data SPKS Tersimpan (Cloud Database)</h3>
+      <h3>Daftar Data SPKS Tersimpan (IndexedDB - High Capacity)</h3>
       <div>
         <label for="fileImportExcel" class="btn btn-import" id="btnImportExcelLabel" style="display: inline-block; cursor: pointer;">Import Excel</label>
         <input type="file" id="fileImportExcel" accept=".xlsx, .xls, .csv" style="display:none;" onchange="importExcelData(event)">
@@ -385,13 +320,13 @@
       </div>
     </div>
     <div class="search-box">
-      <input type="text" id="searchInput" oninput="debouncedSearch()" placeholder="Cari No. SPKS, Buyer, Pengrajin, Nama Item...">
+      <input type="text" id="searchInput" onkeyup="resetPageAndRender()" placeholder="Cari No. SPKS, Buyer, Pengrajin, Nama Item...">
     </div>
     <div class="table-responsive">
       <table class="history-table">
         <thead>
           <tr id="headerRow">
-            <th>No</th><th>Foto</th><th>No. SPKS</th><th>PO / Buyer</th><th>Tgl SPKS</th><th>Tgl Selesai</th><th>Pengrajin</th><th>Harga Sample</th><th>Harga Revisi</th><th>Nama Item</th><th>Jumlah</th><th>Ukuran</th><th>material1</th><th>material2/Dekor/Bebed</th><th>material3</th><th>Berat material1 (KG)</th><th>Berat material2 (KG)</th><th>Berat Total (KG)</th><th>Keterangan</th><th id="thAksi">Aksi</th>
+            <th>No</th><th>Foto</th><th>No. SPKS</th><th>PO / Buyer</th><th>Tgl SPKS</th><th>Tgl Selesai</th><th>Pengrajin</th><th>Harga Sample</th><th>Harga Revisi</th><th>Nama Item</th><th>Jumlah</th><th>Ukuran</th><th>Material 1</th><th>Material 2</th><th>Material 3</th><th>Berat (KG)</th><th>Keterangan</th><th id="thAksi">Aksi</th>
           </tr>
         </thead>
         <tbody id="tabelSimpan"></tbody>
@@ -432,17 +367,33 @@
       }
     }
 
-    // ===== CONFIGURASI SUPABASE CLOUD =====
-    const SUPABASE_URL = "https://gybumgaubajrhsytnatm.supabase.co"; 
-    const SUPABASE_KEY = "sb_publishable_fN7sVGnbrS6CnvaSxiacLw_ZeI6wlQ_";
-    
-    let supabaseClient = null;
-    try {
-      if (typeof supabase !== 'undefined' && SUPABASE_URL.includes('supabase.co')) {
-        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      }
-    } catch(e) {
-      console.error("Gagal inisialisasi Supabase:", e);
+    // ===== CONFIGURASI INDEXEDDB (HIGH CAPACITY STORAGE) =====
+    const DB_NAME = "SPKS_Database";
+    const DB_VERSION = 1;
+    const STORE_NAME = "spks_store";
+    let db = null;
+
+    function initDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onerror = function(event) {
+          console.error("IndexedDB error:", event.target.error);
+          reject(event.target.error);
+        };
+
+        request.onsuccess = function(event) {
+          db = event.target.result;
+          resolve(db);
+        };
+
+        request.onupgradeneeded = function(event) {
+          const database = event.target.result;
+          if (!database.objectStoreNames.contains(STORE_NAME)) {
+            database.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+          }
+        };
+      });
     }
 
     // DAFTAR AKUN HAK AKSES ROLE
@@ -458,14 +409,6 @@
     // VARIABLE PAGINASI
     let currentPage = 1;
     const rowsPerPage = 10;
-
-    // ===== FUNGSI HITUNG BERAT TOTAL OTOMATIS =====
-    function hitungBeratTotal() {
-      const r = parseFloat(document.getElementById('beratmaterial1').value) || 0;
-      const a = parseFloat(document.getElementById('beratmaterial2').value) || 0;
-      const total = r + a;
-      document.getElementById('beratTotal').value = total > 0 ? total.toFixed(2) : '';
-    }
 
     // ===== HELPER FORMATTING OTOMATIS BER-TITIK (RIBUAN / JUTAAN) =====
     function formatRupiahFormat(angka) {
@@ -523,14 +466,12 @@
       zoomBox.style.display = 'none';
     }
 
-    // ===== FUNGSI CEK & PROSES LOGIN (DENGAN REMEMBER ME) =====
     function cekStatusLogin() {
-      // Cek apakah ada data tersimpan di localStorage (Ingat Saya) atau sessionStorage
-      let loggedRole = localStorage.getItem('spks_logged_role') || sessionStorage.getItem('spks_logged_role');
-      let loggedUser = localStorage.getItem('spks_logged_user') || sessionStorage.getItem('spks_logged_user');
+      const loggedRole = sessionStorage.getItem('spks_logged_role');
+      const loggedUser = sessionStorage.getItem('spks_logged_user');
       const overlay = document.getElementById('loginOverlay');
       
-      if (loggedRole && loggedUser) {
+      if (loggedRole) {
         overlay.style.display = 'none';
         document.getElementById('userInfoBadge').innerText = `[ Login: ${loggedUser} (${loggedRole.toUpperCase()}) ]`;
         terapkanAksesRole(loggedRole);
@@ -543,17 +484,11 @@
       event.preventDefault();
       const user = document.getElementById('username').value.trim();
       const pass = document.getElementById('password').value.trim();
-      const rememberMe = document.getElementById('rememberMe').checked;
       const foundUser = USERS.find(u => u.username.toLowerCase() === user.toLowerCase() && u.password === pass);
 
       if (foundUser) {
-        if (rememberMe) {
-          localStorage.setItem('spks_logged_role', foundUser.role);
-          localStorage.setItem('spks_logged_user', foundUser.username);
-        } else {
-          sessionStorage.setItem('spks_logged_role', foundUser.role);
-          sessionStorage.setItem('spks_logged_user', foundUser.username);
-        }
+        sessionStorage.setItem('spks_logged_role', foundUser.role);
+        sessionStorage.setItem('spks_logged_user', foundUser.username);
         document.getElementById('loginError').style.display = 'none';
         cekStatusLogin();
         tampilkanData();
@@ -563,15 +498,9 @@
     }
 
     function logout() {
-      localStorage.removeItem('spks_logged_role');
-      localStorage.removeItem('spks_logged_user');
       sessionStorage.removeItem('spks_logged_role');
       sessionStorage.removeItem('spks_logged_user');
       cekStatusLogin();
-    }
-
-    function getLoggedRole() {
-      return localStorage.getItem('spks_logged_role') || sessionStorage.getItem('spks_logged_role');
     }
 
     function terapkanAksesRole(role) {
@@ -619,10 +548,10 @@
       document.getElementById('btnHapusGambar').style.display = 'none';
     }
 
-    // ===== CRUD SUPABASE DATABASE =====
+    // ===== CRUD INDEXEDDB =====
     async function simpanData() {
-      if (getLoggedRole() === 'user2') return;
-      if (!supabaseClient) { alert("Konfigurasi Supabase URL & Key belum terpasang!"); return; }
+      if (sessionStorage.getItem('spks_logged_role') === 'user2') return;
+      if (!db) { alert("Database lokal belum siap!"); return; }
 
       const payload = {
         no_spks: document.getElementById('noSpks').value,
@@ -638,8 +567,7 @@
         material1: document.getElementById('material1').value,
         material2: document.getElementById('material2').value,
         material3: document.getElementById('material3').value,
-        berat_material1: document.getElementById('beratmaterial1').value ? parseFloat(document.getElementById('beratmaterial1').value) : null,
-        berat_material2: document.getElementById('beratmaterial2').value ? parseFloat(document.getElementById('beratmaterial2').value) : null,
+        berat: document.getElementById('berat').value ? parseFloat(document.getElementById('berat').value) : null,
         keterangan: document.getElementById('keterangan').value,
         gambar: base64Gambar
       };
@@ -649,28 +577,24 @@
         return;
       }
 
-      let response;
-      if (!editId) {
-        response = await supabaseClient.from('spks').insert([payload]);
-      } else {
-        response = await supabaseClient.from('spks').update(payload).eq('id', editId);
+      const transaction = db.transaction([STORE_NAME], "readwrite");
+      const store = transaction.objectStore(STORE_NAME);
+
+      if (editId !== null) {
+        payload.id = editId;
       }
 
-      if (response.error) {
-        alert("Gagal menyimpan data ke Cloud: " + response.error.message);
-      } else {
-        alert("Data SPKS Berhasil Tersimpan di Cloud Database!");
+      const request = store.put(payload);
+
+      request.onsuccess = function() {
+        alert("Data SPKS Berhasil Tersimpan di IndexedDB Lokal!");
         resetForm();
         tampilkanData();
-      }
-    }
+      };
 
-    let searchTimer = null;
-    function debouncedSearch() {
-      clearTimeout(searchTimer);
-      searchTimer = setTimeout(() => {
-        resetPageAndRender();
-      }, 300);
+      request.onerror = function(event) {
+        alert("Gagal menyimpan data ke penyimpanan lokal: " + event.target.error);
+      };
     }
 
     function resetPageAndRender() {
@@ -678,80 +602,74 @@
       tampilkanData();
     }
 
-    // ===== DATABASE LOAD OPTIMIZED =====
+    function getAllDataFromDB() {
+      return new Promise((resolve, reject) => {
+        if (!db) { resolve([]); return; }
+        const transaction = db.transaction([STORE_NAME], "readonly");
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.getAll();
+
+        request.onsuccess = function(event) {
+          resolve(event.target.result.reverse()); // Data terbaru di atas
+        };
+        request.onerror = function(event) {
+          reject(event.target.error);
+        };
+      });
+    }
+
     async function tampilkanData() {
       const tbody = document.getElementById('tabelSimpan');
-      const currentRole = getLoggedRole();
-      const keyword = (document.getElementById('searchInput').value || '').trim();
-
-      if (!supabaseClient) {
-        tbody.innerHTML = `<tr><td colspan="20" style="text-align:center; color:#64748b;">Silakan masukkan URL dan Key Supabase pada file index.html terlebih dahulu.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = `<tr><td colspan="20" style="text-align:center; color:#64748b;">Memuat data...</td></tr>`;
+      const currentRole = sessionStorage.getItem('spks_logged_role');
+      const keyword = (document.getElementById('searchInput').value || '').toLowerCase();
 
       try {
-        const from = (currentPage - 1) * rowsPerPage;
-        const to = from + rowsPerPage - 1;
-
-        let query = supabaseClient
-          .from('spks')
-          .select(
-            'id,no_spks,po_buyer,tgl_spks,tgl_selesai_spks,pengrajin,harga_sample,harga_produksi,nama_item,jumlah_item,ukuran,material1,material2,material3,berat_material1,berat_material2,keterangan,gambar',
-            { count: 'exact' }
-          )
-          .order('id', { ascending: false })
-          .range(from, to);
-
-        if (keyword) {
-          const safeKeyword = keyword.replace(/,/g, ' ');
-          query = query.or(
-            `no_spks.ilike.%${safeKeyword}%,po_buyer.ilike.%${safeKeyword}%,pengrajin.ilike.%${safeKeyword}%,nama_item.ilike.%${safeKeyword}%`
-          );
-        }
-
-        const { data: pageData, error, count } = await query;
-
-        if (error) throw error;
-
-        const totalItems = count || 0;
-        const totalPages = Math.max(1, Math.ceil(totalItems / rowsPerPage));
-
-        if (currentPage > totalPages) {
-          currentPage = totalPages;
-          return tampilkanData();
-        }
-
+        const listData = await getAllDataFromDB();
         tbody.innerHTML = '';
 
-        if (!pageData || pageData.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="20" style="text-align:center; color:#64748b;">${keyword ? 'Data tidak ditemukan' : 'Belum ada data tersimpan di Cloud Database'}</td></tr>`;
+        if (!listData || listData.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:#64748b;">Belum ada data tersimpan di IndexedDB</td></tr>`;
           document.getElementById('paginationInfo').innerText = 'Menampilkan 0 dari 0 data';
           document.getElementById('btnPrev').disabled = true;
           document.getElementById('btnNext').disabled = true;
           return;
         }
 
+        const filteredData = listData.filter(item => {
+          const itemString = `${item.no_spks || ''} ${item.po_buyer || ''} ${item.nama_item || ''} ${item.pengrajin || ''}`.toLowerCase();
+          return !keyword || itemString.includes(keyword);
+        });
+
+        if (filteredData.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:#64748b;">Data tidak ditemukan</td></tr>`;
+          document.getElementById('paginationInfo').innerText = 'Menampilkan 0 dari 0 data';
+          document.getElementById('btnPrev').disabled = true;
+          document.getElementById('btnNext').disabled = true;
+          return;
+        }
+
+        const totalItems = filteredData.length;
+        const totalPages = Math.ceil(totalItems / rowsPerPage);
+
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const endIndex = Math.min(startIndex + rowsPerPage, totalItems);
+        const pageData = filteredData.slice(startIndex, endIndex);
+
         pageData.forEach((item, index) => {
-          const fotoTag = item.gambar
-            ? `<img src="${item.gambar}" loading="lazy" decoding="async" style="width:32px; height:32px; object-fit:cover; cursor:pointer; border-radius:3px;" onmouseover="showZoom(event, this.src)" onmousemove="moveZoom(event)" onmouseout="hideZoom()">`
+          const fotoTag = item.gambar 
+            ? `<img src="${item.gambar}" style="width:32px; height:32px; object-fit:cover; cursor:pointer; border-radius:3px;" onmouseover="showZoom(event, this.src)" onmousemove="moveZoom(event)" onmouseout="hideZoom()">` 
             : '-';
-
-          const tdAksi = (currentRole !== 'user2')
-            ? `<td>
-                <button class="btn-action" style="background-color:#2563eb;" onclick="editData(${item.id})">Edit</button>
-                <button class="btn-action" style="background-color:#dc2626;" onclick="hapusData(${item.id})">Hapus</button>
-              </td>`
-            : '';
-
-          // Calculate Total Weight dynamically
-          const bmaterial1 = parseFloat(item.berat_material1) || 0;
-          const bmaterial2 = parseFloat(item.berat_material2) || 0;
-          const bTotal = bmaterial1 + bmaterial2;
+          
+          let tdAksi = (currentRole !== 'user2') ? `<td>
+            <button class="btn-action" style="background-color:#2563eb;" onclick="editData(${item.id})">Edit</button>
+            <button class="btn-action" style="background-color:#dc2626;" onclick="hapusData(${item.id})">Hapus</button>
+          </td>` : '';
 
           tbody.innerHTML += `<tr>
-            <td>${from + index + 1}</td>
+            <td>${startIndex + index + 1}</td>
             <td>${fotoTag}</td>
             <td><b>${item.no_spks || '-'}</b></td>
             <td>${item.po_buyer || '-'}</td>
@@ -766,112 +684,105 @@
             <td>${item.material1 || '-'}</td>
             <td>${item.material2 || '-'}</td>
             <td>${item.material3 || '-'}</td>
-            <td>${item.berat_material1 ? item.berat_material1 + ' KG' : '-'}</td>
-            <td>${item.berat_material2 ? item.berat_material2 + ' KG' : '-'}</td>
-            <td><b>${bTotal > 0 ? bTotal.toFixed(2) + ' KG' : '-'}</b></td>
+            <td>${item.berat ? item.berat + ' KG' : '-'}</td>
             <td>${item.keterangan || '-'}</td>
             ${tdAksi}
           </tr>`;
         });
 
-        const shownStart = from + 1;
-        const shownEnd = from + pageData.length;
-        document.getElementById('paginationInfo').innerText =
-          `Menampilkan ${shownStart}-${shownEnd} dari ${totalItems} data (Halaman ${currentPage} / ${totalPages})`;
-        document.getElementById('btnPrev').disabled = currentPage === 1;
-        document.getElementById('btnNext').disabled = currentPage >= totalPages;
+        document.getElementById('paginationInfo').innerText = `Menampilkan ${startIndex + 1}-${endIndex} dari ${totalItems} data (Halaman ${currentPage} / ${totalPages})`;
+        document.getElementById('btnPrev').disabled = (currentPage === 1);
+        document.getElementById('btnNext').disabled = (currentPage === totalPages);
 
-      } catch (error) {
-        console.error("Gagal memuat data:", error);
-        tbody.innerHTML = `<tr><td colspan="20" style="text-align:center; color:red;">Gagal memuat dari Cloud: ${error.message}</td></tr>`;
-        document.getElementById('btnPrev').disabled = true;
-        document.getElementById('btnNext').disabled = true;
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; color:red;">Gagal memuat data: ${err}</td></tr>`;
       }
     }
 
     function nextPage() {
-      if (!document.getElementById('btnNext').disabled) {
-        currentPage++;
-        tampilkanData();
-      }
+      currentPage++;
+      tampilkanData();
     }
 
     function prevPage() {
-      if (!document.getElementById('btnPrev').disabled && currentPage > 1) {
-        currentPage--;
-        tampilkanData();
-      }
+      currentPage--;
+      tampilkanData();
     }
 
     async function editData(id) {
-      if (getLoggedRole() === 'user2') return;
+      if (sessionStorage.getItem('spks_logged_role') === 'user2') return;
 
-      const { data, error } = await supabaseClient
-        .from('spks')
-        .select('id,no_spks,po_buyer,tgl_spks,tgl_selesai_spks,pengrajin,harga_sample,harga_produksi,nama_item,jumlah_item,ukuran,material1,material2,material3,berat_material1,berat_material2,keterangan,gambar')
-        .eq('id', id)
-        .single();
-      if (error || !data) return;
+      const transaction = db.transaction([STORE_NAME], "readonly");
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.get(id);
 
-      editId = id;
-      document.getElementById('noSpks').value = data.no_spks || '';
-      document.getElementById('poBuyer').value = data.po_buyer || '';
-      document.getElementById('tglSpks').value = data.tgl_spks || '';
-      document.getElementById('tglSelesaiSpks').value = data.tgl_selesai_spks || '';
-      document.getElementById('pengrajin').value = data.pengrajin || '';
-      document.getElementById('hargaSample').value = data.harga_sample ? formatRupiahFormat(data.harga_sample) : '';
-      document.getElementById('hargaProduksi').value = data.harga_produksi ? formatRupiahFormat(data.harga_produksi) : '';
-      document.getElementById('namaItem').value = data.nama_item || '';
-      document.getElementById('jumlahItem').value = data.jumlah_item || '';
-      document.getElementById('ukuran').value = data.ukuran || '';
-      document.getElementById('material1').value = data.material1 || '';
-      document.getElementById('material2').value = data.material2 || '';
-      document.getElementById('material3').value = data.material3 || '';
-      document.getElementById('beratmaterial1').value = data.berat_material1 || '';
-      document.getElementById('beratmaterial2').value = data.berat_material2 || '';
-      document.getElementById('keterangan').value = data.keterangan || '';
+      request.onsuccess = function(event) {
+        const data = event.target.result;
+        if (!data) return;
 
-      hitungBeratTotal();
+        editId = id;
+        document.getElementById('noSpks').value = data.no_spks || '';
+        document.getElementById('poBuyer').value = data.po_buyer || '';
+        document.getElementById('tglSpks').value = data.tgl_spks || '';
+        document.getElementById('tglSelesaiSpks').value = data.tgl_selesai_spks || '';
+        document.getElementById('pengrajin').value = data.pengrajin || '';
+        document.getElementById('hargaSample').value = data.harga_sample ? formatRupiahFormat(data.harga_sample) : '';
+        document.getElementById('hargaProduksi').value = data.harga_produksi ? formatRupiahFormat(data.harga_produksi) : '';
+        document.getElementById('namaItem').value = data.nama_item || '';
+        document.getElementById('jumlahItem').value = data.jumlah_item || '';
+        document.getElementById('ukuran').value = data.ukuran || '';
+        document.getElementById('material1').value = data.material1 || '';
+        document.getElementById('material2').value = data.material2 || '';
+        document.getElementById('material3').value = data.material3 || '';
+        document.getElementById('berat').value = data.berat || '';
+        document.getElementById('keterangan').value = data.keterangan || '';
 
-      if (data.gambar) {
-        base64Gambar = data.gambar;
-        document.getElementById('imgPreview').src = base64Gambar;
-        document.getElementById('imgPreview').style.display = 'block';
-        document.getElementById('placeholderText').style.display = 'none';
-        document.getElementById('btnHapusGambar').style.display = 'inline-block';
-      } else {
-        hapusGambar();
-      }
+        if (data.gambar) {
+          base64Gambar = data.gambar;
+          document.getElementById('imgPreview').src = base64Gambar;
+          document.getElementById('imgPreview').style.display = 'block';
+          document.getElementById('placeholderText').style.display = 'none';
+          document.getElementById('btnHapusGambar').style.display = 'inline-block';
+        } else {
+          hapusGambar();
+        }
 
-      document.getElementById('btnSimpan').innerText = 'UPDATE DATA CLOUD';
-      document.getElementById('btnBatal').style.display = 'inline-block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('btnSimpan').innerText = 'UPDATE DATA LOKAL';
+        document.getElementById('btnBatal').style.display = 'inline-block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
     }
 
     async function hapusData(id) {
-      if (getLoggedRole() === 'user2') return;
+      if (sessionStorage.getItem('spks_logged_role') === 'user2') return;
 
-      if (confirm("Yakin ingin menghapus data ini dari Cloud?")) {
-        await supabaseClient.from('spks').delete().eq('id', id);
-        tampilkanData();
+      if (confirm("Yakin ingin menghapus data ini dari IndexedDB?")) {
+        const transaction = db.transaction([STORE_NAME], "readwrite");
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.delete(id);
+
+        request.onsuccess = function() {
+          tampilkanData();
+        };
       }
     }
 
     async function hapusSemuaData() {
-      if (getLoggedRole() !== 'admin') {
+      if (sessionStorage.getItem('spks_logged_role') !== 'admin') {
         alert("Akses ditolak: Hanya Admin yang dapat menghapus seluruh data!");
         return;
       }
 
-      if (confirm("Yakin ingin menghapus SELURUH data dari Cloud Database?")) {
-        const { error } = await supabaseClient.from('spks').delete().neq('id', 0);
-        if (error) {
-          alert("Gagal menghapus data: " + error.message);
-        } else {
-          alert("Semua data berhasil dihapus dari Cloud!");
+      if (confirm("Yakin ingin menghapus SELURUH data dari IndexedDB?")) {
+        const transaction = db.transaction([STORE_NAME], "readwrite");
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.clear();
+
+        request.onsuccess = function() {
+          alert("Semua data berhasil dihapus dari penyimpanan lokal!");
           resetForm();
           tampilkanData();
-        }
+        };
       }
     }
 
@@ -904,11 +815,9 @@
     }
 
     async function unduhSemuaExcel() {
-      if (!supabaseClient) return;
-      const { data: listData, error } = await supabaseClient.from('spks').select('*').order('id', { ascending: false });
-
-      if (error || !listData || listData.length === 0) {
-        alert("Tidak ada data di Cloud untuk diunduh!");
+      const listData = await getAllDataFromDB();
+      if (!listData || listData.length === 0) {
+        alert("Tidak ada data tersimpan untuk diunduh!");
         return;
       }
 
@@ -927,12 +836,10 @@
         { header: 'Nama Item', key: 'namaItem', width: 25 },
         { header: 'Jumlah', key: 'jumlahItem', width: 10 },
         { header: 'Ukuran', key: 'ukuran', width: 15 },
-        { header: 'material1', key: 'material1', width: 15 },
-        { header: 'material2/Dekor/Bebed', key: 'material2', width: 15 },
-        { header: 'material3', key: 'material3', width: 15 },
-        { header: 'Berat material1 (KG)', key: 'beratmaterial1', width: 18 },
-        { header: 'Berat material2 (KG)', key: 'beratmaterial2', width: 18 },
-        { header: 'Berat Total (KG)', key: 'beratTotal', width: 18 },
+        { header: 'Material 1', key: 'material1', width: 15 },
+        { header: 'Material 2', key: 'material2', width: 15 },
+        { header: 'Material 3', key: 'material3', width: 15 },
+        { header: 'Berat (KG)', key: 'berat', width: 12 },
         { header: 'Keterangan', key: 'keterangan', width: 25 }
       ];
 
@@ -940,10 +847,6 @@
       ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF16A34A' } };
 
       listData.forEach((item, index) => {
-        const bmaterial1 = parseFloat(item.berat_material1) || 0;
-        const bmaterial2 = parseFloat(item.berat_material2) || 0;
-        const bTotal = bmaterial1 + bmaterial2;
-
         ws.addRow({
           no: index + 1,
           noSpks: item.no_spks,
@@ -959,19 +862,17 @@
           material1: item.material1,
           material2: item.material2,
           material3: item.material3,
-          beratmaterial1: item.berat_material1 ? Number(item.berat_material1) : "",
-          beratmaterial2: item.berat_material2 ? Number(item.berat_material2) : "",
-          beratTotal: bTotal > 0 ? Number(bTotal.toFixed(2)) : "",
+          berat: item.berat ? Number(item.berat) : "",
           keterangan: item.keterangan
         });
       });
 
       const buffer = await workbook.xlsx.writeBuffer();
-      saveAs(new Blob([buffer]), `Rekap_Cloud_SPKS_${new Date().getTime()}.xlsx`);
+      saveAs(new Blob([buffer]), `Rekap_IndexedDB_SPKS_${new Date().getTime()}.xlsx`);
     }
 
     function importExcelData(event) {
-      if (getLoggedRole() === 'user2') return;
+      if (sessionStorage.getItem('spks_logged_role') === 'user2') return;
 
       const file = event.target.files[0];
       if (!file) return;
@@ -998,33 +899,43 @@
             return null;
           };
 
-          const payloadBatch = jsonRows.map(row => ({
-            no_spks: String(getVal(row, "No. SPKS", "No SPKS", "noSpks") || ""),
-            po_buyer: String(getVal(row, "PO / Buyer", "PO/Buyer", "Buyer", "poBuyer") || ""),
-            tgl_spks: getVal(row, "Tanggal SPKS", "Tgl SPKS") || null,
-            tgl_selesai_spks: getVal(row, "Tanggal Selesai", "Tgl Selesai") || null,
-            pengrajin: String(getVal(row, "Pengrajin / SUB", "Pengrajin") || ""),
-            harga_sample: cleanRupiah(getVal(row, "Harga Sample")),
-            harga_produksi: cleanRupiah(getVal(row, "Harga Revisi")),
-            nama_item: String(getVal(row, "Nama Item") || ""),
-            jumlah_item: getVal(row, "Jumlah") ? parseInt(getVal(row, "Jumlah")) : null,
-            ukuran: String(getVal(row, "Ukuran") || ""),
-            material1: String(getVal(row, "material1") || ""),
-            material2: String(getVal(row, "material2/Dekor/Bebed") || ""),
-            material3: String(getVal(row, "material3") || ""),
-            berat_material1: getVal(row, "Berat material1 (KG)", "Berat material1") ? parseFloat(getVal(row, "Berat material1 (KG)", "Berat material1")) : null,
-            berat_material2: getVal(row, "Berat material2 (KG)", "Berat material2") ? parseFloat(getVal(row, "Berat material2 (KG)", "Berat material2")) : null,
-            keterangan: String(getVal(row, "Keterangan") || "")
-          })).filter(item => item.no_spks || item.nama_item || item.po_buyer);
+          const transaction = db.transaction([STORE_NAME], "readwrite");
+          const store = transaction.objectStore(STORE_NAME);
 
-          const { error } = await supabaseClient.from('spks').insert(payloadBatch);
+          jsonRows.forEach(row => {
+            const payload = {
+              no_spks: String(getVal(row, "No. SPKS", "No SPKS", "noSpks") || ""),
+              po_buyer: String(getVal(row, "PO / Buyer", "PO/Buyer", "Buyer", "poBuyer") || ""),
+              tgl_spks: getVal(row, "Tanggal SPKS", "Tgl SPKS") || null,
+              tgl_selesai_spks: getVal(row, "Tanggal Selesai", "Tgl Selesai") || null,
+              pengrajin: String(getVal(row, "Pengrajin / SUB", "Pengrajin") || ""),
+              harga_sample: cleanRupiah(getVal(row, "Harga Sample")),
+              harga_produksi: cleanRupiah(getVal(row, "Harga Revisi")),
+              nama_item: String(getVal(row, "Nama Item") || ""),
+              jumlah_item: getVal(row, "Jumlah") ? parseInt(getVal(row, "Jumlah")) : null,
+              ukuran: String(getVal(row, "Ukuran") || ""),
+              material1: String(getVal(row, "Material 1") || ""),
+              material2: String(getVal(row, "Material 2") || ""),
+              material3: String(getVal(row, "Material 3") || ""),
+              berat: getVal(row, "Berat (KG)", "Berat") ? parseFloat(getVal(row, "Berat (KG)", "Berat")) : null,
+              keterangan: String(getVal(row, "Keterangan") || ""),
+              gambar: ""
+            };
 
-          if (error) {
-            alert("Gagal mengimpor data ke Cloud: " + error.message);
-          } else {
-            alert(`Berhasil mengimpor ${payloadBatch.length} data ke Cloud Database!`);
+            if (payload.no_spks || payload.nama_item || payload.po_buyer) {
+              store.add(payload);
+            }
+          });
+
+          transaction.oncomplete = function() {
+            alert("Berhasil mengimpor data ke IndexedDB Lokal!");
             tampilkanData();
-          }
+          };
+
+          transaction.onerror = function(event) {
+            alert("Gagal mengimpor data: " + event.target.error);
+          };
+
         } catch (err) {
           alert("Format file Excel tidak sesuai!");
         } finally {
@@ -1048,23 +959,26 @@
       document.getElementById('material1').value = '';
       document.getElementById('material2').value = '';
       document.getElementById('material3').value = '';
-      document.getElementById('beratmaterial1').value = '';
-      document.getElementById('beratmaterial2').value = '';
-      document.getElementById('beratTotal').value = '';
+      document.getElementById('berat').value = '';
       document.getElementById('keterangan').value = '';
       hapusGambar();
-      document.getElementById('btnSimpan').innerText = 'SIMPAN CLOUD';
+      document.getElementById('btnSimpan').innerText = 'SIMPAN LOKAL';
       document.getElementById('btnBatal').style.display = 'none';
       generateNoSpks();
     }
 
     function batalEdit() { resetForm(); }
 
-    window.onload = function() {
+    window.onload = async function() {
       initTheme();
-      cekStatusLogin();
-      tampilkanData();
-      generateNoSpks();
+      try {
+        await initDB();
+        cekStatusLogin();
+        tampilkanData();
+        generateNoSpks();
+      } catch (err) {
+        alert("Gagal menginisialisasi IndexedDB: " + err);
+      }
     };
   </script>
 </body>
